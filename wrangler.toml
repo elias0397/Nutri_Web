@@ -1,7 +1,6 @@
 name = "nutriweb"
-main = ""        # <-- vacía si solo es sitio estático
+main = ""
 compatibility_date = "2025-11-19"
 
 [site]
-bucket = "./public"
-entry-point = ""   # eliminar, es obsoleto
+bucket = "."          # <-- la raíz del repositorio
