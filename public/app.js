@@ -43,14 +43,16 @@ function realizarCalculos(e) {
     y_val: getData('y_val'),
     z_val: getData('z_val'),
     pesoIdealManual: getData('pesoIdealManual'),
-    // Se elimina factorAF
+    // Factores reintroducidos
+    factorActividad: getData('factorActividad'),
+    factorInjuria: getData('factorInjuria')
   };
 
   // =====================================================
   // 2) Validaciones básicas
   // =====================================================
-  // Se elimina factorAF de la lista de requeridos
-  const numerosRequeridos = ['peso','talla','cintura','muneca']; 
+  // Se añaden los nuevos factores a la lista de requeridos
+  const numerosRequeridos = ['peso','talla','cintura','muneca', 'factorActividad', 'factorInjuria']; 
   for (const key of numerosRequeridos) {
     if (isNaN(datos[key]) || datos[key] <= 0) {
       alert(`Por favor ingresa un valor numérico válido para ${key}.`);
@@ -167,7 +169,8 @@ function realizarCalculos(e) {
     tmb = 655.1 + (9.56 * pesoUtilizar) + (1.85 * datos.talla) - (4.68 * datos.edad);
   }
   
-  // ELIMINAMOS EL CÁLCULO DE VCT = TMB * factorAF
+  // Valor Calórico Total (VCT) = TMB * Factor Actividad * Factor Injuria
+  const vct = tmb * datos.factorActividad * datos.factorInjuria;
 
 
   // =====================================================
@@ -202,8 +205,7 @@ function realizarCalculos(e) {
   document.getElementById('pesoAjustadoRes').textContent = pesoUtilizar.toFixed(1).replace('.', ',');
   document.getElementById('formulaPracticaRes').textContent = formulaPractica.toFixed(1).replace('.', ',');
   document.getElementById('harrisBenedictRes').textContent = tmb.toFixed(1).replace('.', ',');
-  // ELIMINAMOS VCT
-  // document.getElementById('vctRes').textContent = vct.toFixed(1).replace('.', ','); 
+  document.getElementById('vctRes').textContent = vct.toFixed(1).replace('.', ','); 
 
   // Resultados IMC
   document.getElementById('imcAutoRes').textContent = imc.toFixed(2).replace('.', ',');

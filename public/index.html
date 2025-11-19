@@ -61,6 +61,15 @@
           <input type="text" id="muneca" required placeholder="Ej: 16,2" />
         </div>
         
+        <div class="input-group">
+          <label for="factorActividad">Factor de Actividad (FA):</label>
+          <input type="text" id="factorActividad" required placeholder="Ej: 1,3 (Sedentario)" />
+        </div>
+
+        <div class="input-group">
+          <label for="factorInjuria">Factor de Injuria (FI):</label>
+          <input type="text" id="factorInjuria" required placeholder="Ej: 1,0 (Sin estrés), 1,5 (Sepsis)" />
+        </div>
         </div>
 
       <div class="section-header">Peso Ideal (según tabla)</div>
@@ -118,6 +127,10 @@
       <div class="result-row">
         <div class="result-label">Harris Benedict (TMB):</div>
         <div class="result-value"><span id="harrisBenedictRes"></span> Kcal.</div>
+      </div>
+      <div class="result-row">
+        <div class="result-label" style="font-weight: 800;">Valor Calórico Total (VCT):</div>
+        <div class="result-value" style="font-weight: 800;"><span id="vctRes"></span> Kcal.</div>
       </div>
       <hr>
       <div class="section-header">
