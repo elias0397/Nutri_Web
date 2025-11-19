@@ -359,9 +359,7 @@ export default {
     document.getElementById('fecha').valueAsDate = new Date();
   </script>
 </body>
-</html>
-
-`;
+</html>`;
 
     return new Response(html, {
       headers: {
