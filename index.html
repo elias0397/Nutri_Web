@@ -207,40 +207,113 @@
   </div>
 
   <script>
-    // convierte coma -> punto y parsea a float
+    // convierte coma -> punto y parsea a float (soporta separar miles sin problemas)
     function parseNumero(v) {
       if (v === undefined || v === null) return NaN;
       const s = String(v).trim();
       if (s === '') return NaN;
-      // reemplazar comas por puntos (soporta "1.234,56" o "1234,56" - simple replace)
-      const normalized = s.replace(/\./g, '').replace(/,/g, '.');
+      // quitar espacios, reemplazar separador miles (.) y usar , como decimal -> transforma 1.234,56 -> 1234.56
+      const normalized = s.replace(/\s+/g, '').replace(/\./g, '').replace(/,/g, '.');
       const n = parseFloat(normalized);
       return isNaN(n) ? NaN : n;
     }
 
-    // Evalúa una fórmula escrita por el usuario .- convierte comas a puntos antes de evaluar.
-    // Solo acepta operaciones aritméticas básicas y paréntesis. Usamos Function para evaluar la expresión.
-    function evaluarFormulaSeguro(expr) {
+    // PARSER MATEMÁTICO SEGURO (shunting-yard -> RPN -> evaluar)
+    // acepta: números (con decimales), operadores + - * / y paréntesis
+    function evaluarExpresionAritmetica(expr) {
       if (!expr || String(expr).trim() === '') return NaN;
-      try {
-        // Normalizar comas -> puntos y quitar espacios extra
-        const s = String(expr).trim().replace(/\./g, '').replace(/,/g, '.');
-        // Validar que la cadena contiene solo números, operadores y paréntesis (evita código malicioso)
-        if (!/^[0-9+\-*/().\s]+$/.test(s)) return NaN;
-        // Evaluar la expresión aritmética
-        // eslint-disable-next-line no-new-func
-        const result = Function('"use strict"; return (' + s + ')')();
-        return typeof result === 'number' && isFinite(result) ? result : NaN;
-      } catch (e) {
-        return NaN;
+      // normalizar coma -> punto y quitar espacios
+      let s = String(expr).trim().replace(/\s+/g, '').replace(/\./g, '').replace(/,/g, '.');
+
+      // validación básica: solo caracteres permitidos 0-9 . + - * / ( )
+      if (!/^[0-9+\-*/().]+$/.test(s)) return NaN;
+
+      // tokenizar: números y operadores/paréntesis
+      const tokens = [];
+      let i = 0;
+      while (i < s.length) {
+        const ch = s[i];
+        if (/[0-9.]/.test(ch)) {
+          // leer número completo
+          let j = i+1;
+          while (j < s.length && /[0-9.]/.test(s[j])) j++;
+          tokens.push(s.slice(i, j));
+          i = j;
+        } else {
+          tokens.push(ch);
+          i++;
+        }
       }
+
+      // shunting-yard: operadores y precedencia
+      const outQueue = [];
+      const opStack = [];
+      const prec = { '+':1, '-':1, '*':2, '/':2 };
+      const isOp = t => ['+','-','*','/'].includes(t);
+
+      for (let t of tokens) {
+        if (/^[0-9.]+$/.test(t)) {
+          outQueue.push(t);
+        } else if (isOp(t)) {
+          while (opStack.length) {
+            const top = opStack[opStack.length-1];
+            if (isOp(top) && ((prec[top] > prec[t]) || (prec[top] === prec[t]))) {
+              outQueue.push(opStack.pop());
+            } else break;
+          }
+          opStack.push(t);
+        } else if (t === '(') {
+          opStack.push(t);
+        } else if (t === ')') {
+          let found = false;
+          while (opStack.length) {
+            const top = opStack.pop();
+            if (top === '(') { found = true; break; }
+            outQueue.push(top);
+          }
+          if (!found) return NaN; // paréntesis desbalanceados
+        } else {
+          return NaN; // token inválido
+        }
+      }
+
+      while (opStack.length) {
+        const top = opStack.pop();
+        if (top === '(' || top === ')') return NaN; // paréntesis desbalanceados
+        outQueue.push(top);
+      }
+
+      // evaluar RPN
+      const stack = [];
+      for (let t of outQueue) {
+        if (/^[0-9.]+$/.test(t)) {
+          stack.push(parseFloat(t));
+        } else if (isOp(t)) {
+          if (stack.length < 2) return NaN;
+          const b = stack.pop();
+          const a = stack.pop();
+          let res = NaN;
+          if (t === '+') res = a + b;
+          else if (t === '-') res = a - b;
+          else if (t === '*') res = a * b;
+          else if (t === '/') {
+            if (b === 0) return NaN;
+            res = a / b;
+          }
+          stack.push(res);
+        } else {
+          return NaN;
+        }
+      }
+      if (stack.length !== 1) return NaN;
+      const final = stack[0];
+      return typeof final === 'number' && isFinite(final) ? final : NaN;
     }
 
-    // función principal
     function realizarCalculos(e) {
       e.preventDefault();
 
-      // Obtener elementos por id (siempre con getElementById)
+      // obtener elementos
       const elPeso = document.getElementById('peso');
       const elTalla = document.getElementById('talla');
       const elCintura = document.getElementById('cintura');
@@ -251,25 +324,24 @@
       const elFormula = document.getElementById('formulaTabla');
       const elSexo = document.getElementById('sexo');
 
-      // Parsear números (acepta comas)
+      // parsear con soporte de coma
       const peso = parseNumero(elPeso.value);
       const talla = parseNumero(elTalla.value);
       const cinturaVal = parseNumero(elCintura.value);
       const munecaVal = parseNumero(elMuneca.value);
 
-      // Validaciones básicas de inputs necesarios
       if (isNaN(peso) || isNaN(talla) || isNaN(cinturaVal) || isNaN(munecaVal) || talla <= 0 || munecaVal <= 0) {
         alert('Por favor completa peso, talla, cintura y muñeca con valores numéricos válidos (usa coma como decimal).');
         return;
       }
 
-      // Calcular peso ideal: preferir fórmula si existe
+      // calcular peso ideal
       let pesoIdealCalc = NaN;
       const formulaText = String(elFormula.value || '').trim();
       if (formulaText !== '') {
-        pesoIdealCalc = evaluarFormulaSeguro(formulaText);
+        // usar parser seguro (sin eval)
+        pesoIdealCalc = evaluarExpresionAritmetica(formulaText);
       } else {
-        // usar Dato1, Dato2, Divisor
         const x = parseNumero(elDato1.value);
         const y = parseNumero(elDato2.value);
         const z = parseNumero(elDivisor.value);
@@ -279,11 +351,11 @@
       }
 
       if (isNaN(pesoIdealCalc) || pesoIdealCalc <= 0) {
-        alert('No se pudo calcular el Peso Ideal. Completa Fórmula de tabla o Dato 1, Dato 2 y Divisor correctamente (Divisor ≠ 0).');
+        alert('No se pudo calcular el Peso Ideal. Completa Fórmula o Dato1/Dato2/Divisor correctamente (Divisor ≠ 0).');
         return;
       }
 
-      // Contextura corporal
+      // contextura corporal
       const valorCtx = talla / munecaVal;
       let tipoCtx = '';
       const sexo = String(elSexo.value || '').toLowerCase();
@@ -321,20 +393,19 @@
       else if (imc < 30) imcCat = 'Sobrepeso';
       else imcCat = 'Obesidad';
 
-      // Cintura / Talla
+      // cintura/talla
       const ctRatio = cinturaVal / talla;
       const riesgoCintura = ctRatio > 0.5;
 
-      // Mostrar resultados (formateando con coma)
-      function f1(n) { return (Math.round(n * 10) / 10).toFixed(1).replace('.', ','); } // 1 decimal con coma
-      function f2(n) { return (Math.round(n * 100) / 100).toFixed(2).replace('.', ','); } // 2 decimales con coma
+      // funciones de formateo (coma decimal)
+      function f1(n) { return (Math.round(n * 10) / 10).toFixed(1).replace('.', ','); }
+      function f2(n) { return (Math.round(n * 100) / 100).toFixed(2).replace('.', ','); }
 
       document.getElementById('ctxValor').textContent = f2(valorCtx);
       document.getElementById('ctxTipo').textContent = tipoCtx;
       document.getElementById('pesoIdeal').textContent = f2(pesoIdealCalc);
       document.getElementById('ppi').textContent = f1(ppi);
 
-      // chip
       const chip = document.getElementById('ppiChip');
       chip.className = ppiChipClass;
       chip.textContent = ppiCat;
@@ -344,14 +415,11 @@
       document.getElementById('imcCat').textContent = imcCat;
       document.getElementById('ct').textContent = f2(ctRatio);
 
-      // mostrar riesgo cintura
       document.getElementById('riesgoCintura').style.display = riesgoCintura ? 'block' : 'none';
-
-      // mostrar tarjeta resultados
       document.getElementById('resultados').style.display = 'block';
     }
 
-    // poner fecha actual
+    // fecha actual
     document.getElementById('fecha').valueAsDate = new Date();
   </script>
 </body>
