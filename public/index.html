@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NutriWeb - Sistema de Cálculo Nutricional</title>
-
+  
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -32,7 +32,7 @@
 
         <div class="input-group">
           <label for="peso">Peso actual: <span class="unit">KG</span></label>
-          <input type="text" id="peso" required placeholder="Ej: 72,5" />
+          <input type="text" id="peso" required placeholder="Ej: 72,5" /> 
         </div>
 
         <div class="input-group">
@@ -51,49 +51,48 @@
 
         <div class="input-group">
           <label for="cintura">CIA DE CINTURA: <span class="unit">CM</span></label>
-          <input type="text" id="cintura" placeholder="Ej: 92,5" required />
+          <input type="text" id="cintura" required placeholder="Ej: 92,5" />
           <div class="note">> 100 CM indica riesgo cardiovascular.</div>
         </div>
 
         <div class="input-group">
           <label for="muneca">CIA de Muñeca: <span class="unit">CM</span></label>
-          <input type="text" id="muneca" placeholder="Ej: 16,2" required />
+          <input type="text" id="muneca" required placeholder="Ej: 16,2" />
         </div>
       </div>
-
 
       <div class="section-header">Peso Ideal (según tabla)</div>
       <div class="form-grid">
         <div class="input-group">
-          <label for="x_val">Valor 1 (X):</label>
+          <label for="x_val">Valor 1 (tabla peso ideal):</label>
           <input type="text" id="x_val" placeholder="Ej: 71,2" />
         </div>
         <div class="input-group">
-          <label for="y_val">Valor 2 (Y):</label>
+          <label for="y_val">Valor 2 (tabla peso idea):</label>
           <input type="text" id="y_val" placeholder="Ej: 80" />
         </div>
         <div class="input-group">
-          <label for="z_val">Divisor (Z):</label>
+          <label for="z_val">Divisor (tabla peso idea):</label>
           <input type="text" id="z_val" placeholder="Ej: 2" />
         </div>
 
         <div class="input-group full-width">
-          <label for="pesoIdealManual">Peso ideal calculado (automático) o manual:</label>
-          <input type="text" id="pesoIdealManual" placeholder="Ej: 72,0" />
-          <div class="small-note">Se calcula desde (X+Y)/Z o puedes escribirlo manualmente.</div>
+          <label for="pesoIdealManual">Peso ideal calculado (automático) — o ingresa manual si prefieres:</label>
+          <input type="text" id="pesoIdealManual" placeholder="Se calcula desde (x+y)/z o puedes escribirlo manualmente" />
+          <div class="small-note">Si completas X,Y,Z el sistema calculará automáticamente el Peso ideal = (X + Y) / Z. Si quieres, puedes sobreescribir manualmente aquí.</div>
         </div>
       </div>
 
       <div class="section-header">Dx. Médico:</div>
       <div class="input-group">
         <label for="dxMedico">Diagnóstico Médico:</label>
-        <textarea id="dxMedico"></textarea>
+        <textarea id="dxMedico" placeholder="Ingrese diagnóstico médico..."></textarea>
       </div>
 
       <div class="section-header">Dx. Nutricional:</div>
       <div class="input-group">
         <label for="dxNutricional">Diagnóstico Nutricional:</label>
-        <textarea id="dxNutricional"></textarea>
+        <textarea id="dxNutricional" placeholder="Siempre el peor rango..."></textarea>
         <div class="note info">Siempre el peor rango.</div>
       </div>
 
@@ -104,7 +103,7 @@
       <h2 style="text-align:center; margin-bottom:20px; color:#333;">📊 Resultados del Análisis</h2>
 
       <div class="result-row">
-        <div class="result-label">Contextura corporal:</div>
+        <div class="result-label">Contextura corporal (talla/muneca):</div>
         <div class="result-value"><span id="ctxValor"></span></div>
       </div>
 
@@ -120,9 +119,7 @@
 
       <div class="result-row">
         <div class="result-label">% Peso Ideal (PPI):</div>
-        <div class="result-value">
-          <span id="ppiRes"></span> <span id="ppiChip"></span>
-        </div>
+        <div class="result-value"><span id="ppiRes"></span> <span id="ppiChip" class=""></span></div>
       </div>
 
       <div class="result-row">
@@ -141,7 +138,7 @@
       </div>
 
       <div class="result-row">
-        <div class="result-label">Relación cintura/talla:</div>
+        <div class="result-label">Relación cintura / talla:</div>
         <div class="result-value"><span id="cinturaTalla"></span></div>
       </div>
 

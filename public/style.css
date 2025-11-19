@@ -1,195 +1,188 @@
-/* style.css */
-:root {
-  --primary-color: #e53935; /* Rojo manzana/salud */
-  --secondary-color: #2e7d32;
-  --bg-color: #f4f6f8;
-  --card-bg: #ffffff;
-  --text-color: #333333;
-  --border-radius: 12px;
-}
-
+/* style.css (Estilo Moderno) */
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* Fondo degradado moderno */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+  min-height: 100vh;
   padding: 20px;
-  line-height: 1.6;
 }
 
 .container {
-  max-width: 800px;
+  background: white;
+  border-radius: 20px; /* Bordes grandes y redondeados */
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 40px;
+  max-width: 1000px;
   margin: 0 auto;
-  background: var(--card-bg);
-  padding: 25px;
-  border-radius: var(--border-radius);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 h1 {
-  text-align: center;
-  color: var(--primary-color);
-  font-size: 1.8rem;
+  color: #333;
   margin-bottom: 30px;
+  font-size: 2em;
+  text-align: center;
 }
 
-/* --- FORMULARIO Y GRID RESPONSIVO --- */
+.section-header {
+  background: #6c757d; /* Gris oscuro para las secciones */
+  color: white;
+  padding: 12px 20px;
+  margin: 30px 0 20px 0;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1em;
+}
+
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
   margin-bottom: 20px;
 }
 
-.section-header {
-  background-color: #eee;
-  padding: 10px 15px;
-  border-radius: 8px;
-  font-weight: bold;
-  margin: 25px 0 15px 0;
-  color: #555;
-  border-left: 5px solid var(--primary-color);
-}
-
 .input-group {
-  display: flex;
-  flex-direction: column;
+  margin-bottom: 20px;
 }
 
-.full-width {
+.input-group.full-width {
   grid-column: 1 / -1;
 }
 
 label {
+  display: block;
   font-weight: 600;
   margin-bottom: 8px;
-  font-size: 0.9rem;
+  color: #444;
+  font-size: 0.95em;
 }
 
-.unit {
-  font-size: 0.75rem;
-  color: #888;
-  background: #eee;
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin-left: 5px;
-}
-
-/* Inputs grandes para dedos (touch friendly) */
 input, select, textarea {
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem; 
-  transition: border 0.3s;
   width: 100%;
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 2px solid #e0e0e0;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background: #fffef0; /* Fondo ligeramente crema */
+  font-family: inherit;
 }
 
 input:focus, select:focus, textarea:focus {
-  border-color: var(--primary-color);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.2);
+  border-color: #667eea; /* Color del degradado como foco */
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 100px;
+}
+
+.unit {
+  color: #666;
+  font-size: 0.9em;
+  margin-left: 5px;
 }
 
 .note {
-  font-size: 0.8rem;
-  color: #666;
+  font-size: 0.85em;
+  color: #d9534f; /* Rojo de alerta */
   margin-top: 5px;
+  font-style: italic;
 }
 
-.small-note {
-  font-size: 0.75rem;
-  color: #888;
-  margin-top: 4px;
+.note.info {
+  color: #5bc0de; /* Azul de información */
 }
 
-/* --- BOTÓN --- */
 button {
   width: 100%;
   padding: 15px;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: var(--border-radius);
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
   margin-top: 20px;
-  transition: background 0.3s;
+  border: none;
+  border-radius: 10px;
+  /* Botón con degradado */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
 button:hover {
-  background-color: #c62828;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
 }
 
 button:active {
-  transform: scale(0.98);
+  transform: translateY(0);
 }
 
-/* --- RESULTADOS --- */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .container {
+    padding: 25px;
+  }
+
+  h1 {
+    font-size: 1.5em;
+  }
+}
+
+/* estilos de resultados */
+.chip {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px; /* Chip redondeado */
+  font-weight: 700;
+  color: white;
+  margin-left: 8px;
+  font-size: 0.95em;
+}
+.chip.normal { background: #2e7d32; }        /* verde */
+.chip.sobrepeso { background: #ff9800; }     /* naranja */
+.chip.obesidad { background: #d32f2f; }      /* rojo */
+.chip.desnutricion { background: #6a1b9a; }  /* morado */
+.chip.riesgo { background: #c62828; }        /* rojo oscuro */
+
 .result-card {
-  margin-top: 30px;
+  margin-top: 40px;
   padding: 20px;
-  background: #fafafa;
-  border: 2px solid #eee;
-  border-radius: var(--border-radius);
-  animation: fadeIn 0.5s ease-in;
+  background: #f8f9fa;
+  border-radius: 15px;
+  border: 2px solid #e0e0e0;
 }
 
 .result-row {
   display: flex;
   justify-content: space-between;
-  padding: 10px 0;
+  gap: 12px;
+  align-items: center;
+  margin: 8px 0;
+  padding: 5px 0;
   border-bottom: 1px solid #e0e0e0;
 }
+.result-row:last-child { border-bottom: none; }
 
-.result-row:last-child {
-  border-bottom: none;
-}
+.result-label { color: #333; font-weight: 600; }
+.result-value { color: #111; font-weight: 700; }
 
-.result-label {
-  font-weight: 600;
-  color: #555;
-}
-
-.result-value {
-  font-weight: bold;
-  color: #000;
-  text-align: right;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* --- AJUSTES ESPECÍFICOS MÓVIL (para pantallas pequeñas) --- */
-@media (max-width: 600px) {
-  .container {
-    padding: 15px;
-  }
-  
-  h1 {
-    font-size: 1.5rem;
-  }
-  
-  .result-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .result-value {
-    text-align: left;
-    color: var(--secondary-color);
-    margin-top: 5px;
-  }
-}
+.small-note { font-size: 0.9em; color: #666; margin-top: 6px; }
