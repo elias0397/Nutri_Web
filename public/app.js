@@ -116,6 +116,7 @@ function realizarCalculos(e) {
   // =====================================================
   
   let pesoUtilizar;
+  // Determinar Peso a utilizar (Peso Actual o Peso Ajustado - PA)
   // Si el paciente tiene sobrepeso o es obeso (IMC >= 25 O PPI >= 110%), se usa Peso Ajustado.
   if (imc >= 25 || ppi >= 110) {
     // PA = PI + 0.25 * (Peso Actual - PI)
@@ -126,10 +127,36 @@ function realizarCalculos(e) {
     pesoUtilizar = datos.peso;
   }
   
-  // Fórmula Práctica (Valor fijo)
-  const formulaPractica = 2005;
+  // 5.1) Cálculo de Fórmula Práctica (Depende del PPI)
+  let factorKcal;
+  let pesoParaPractica;
 
-  // Harris-Benedict Original (GMR) - Usa Talla en CM y el Peso a Utilizar
+  if (ppi >= 110) {
+      // Sobrepeso/Obesidad (PPI >= 110%) -> Peso Ajustado x 25 kcal
+      pesoParaPractica = pesoUtilizar; // pesoUtilizar es PA en este caso
+      factorKcal = 25;
+  } else if (ppi >= 90) {
+      // Normal (90% <= PPI < 110%) -> Peso X 30 kcal (Mantenimiento - Asunción)
+      pesoParaPractica = datos.peso;
+      factorKcal = 30;
+  } else if (ppi >= 85) {
+      // Desnutrición Leve (85% <= PPI < 90%) -> Peso X 30 kcal
+      pesoParaPractica = datos.peso;
+      factorKcal = 30;
+  } else if (ppi >= 75) {
+      // Desnutrición Moderada (75% <= PPI < 85%) -> Peso X 40 kcal
+      pesoParaPractica = datos.peso;
+      factorKcal = 40;
+  } else { // ppi < 75
+      // Desnutrición Severa (PPI < 75%) -> Peso X 45 kcal
+      pesoParaPractica = datos.peso;
+      factorKcal = 45;
+  }
+
+  const formulaPractica = pesoParaPractica * factorKcal;
+
+
+  // 5.2) Harris-Benedict Original (GMR) - Usa Talla en CM y el Peso a Utilizar
   let tmb;
   if (datos.sexo === 'masculino') {
     // TMB Hombres: 66,47 + (13, 75 x P) + (5 x T) - (6,75 x E)
@@ -173,7 +200,7 @@ function realizarCalculos(e) {
   
   // Resultados Energía
   document.getElementById('pesoAjustadoRes').textContent = pesoUtilizar.toFixed(1).replace('.', ',');
-  document.getElementById('formulaPracticaRes').textContent = formulaPractica.toFixed(0);
+  document.getElementById('formulaPracticaRes').textContent = formulaPractica.toFixed(1).replace('.', ',');
   document.getElementById('harrisBenedictRes').textContent = tmb.toFixed(1).replace('.', ',');
   document.getElementById('vctRes').textContent = vct.toFixed(1).replace('.', ',');
 
