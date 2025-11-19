@@ -49,7 +49,6 @@ function realizarCalculos(e) {
   // =====================================================
   // 2) Validaciones básicas
   // =====================================================
-  // Se quitó 'tallaIMC' de la lista de validaciones
   const numerosRequeridos = ['peso','talla','cintura','muneca', 'factorAF'];
   for (const key of numerosRequeridos) {
     if (isNaN(datos[key]) || datos[key] <= 0) {
@@ -127,17 +126,17 @@ function realizarCalculos(e) {
     pesoUtilizar = datos.peso;
   }
   
-  // Fórmula Práctica (Valor fijo según tu imagen anterior)
+  // Fórmula Práctica (Valor fijo)
   const formulaPractica = 2005;
 
-  // Harris-Benedict Revisada (Mifflin-St Jeor) - Usa Talla en CM
+  // Harris-Benedict Original (GMR) - Usa Talla en CM y el Peso a Utilizar
   let tmb;
   if (datos.sexo === 'masculino') {
-    // TMB Hombres: 10 * P + 6.25 * T - 5 * E + 5
-    tmb = 10 * pesoUtilizar + 6.25 * datos.talla - 5 * datos.edad + 5;
+    // TMB Hombres: 66,47 + (13, 75 x P) + (5 x T) - (6,75 x E)
+    tmb = 66.47 + (13.75 * pesoUtilizar) + (5 * datos.talla) - (6.75 * datos.edad);
   } else {
-    // TMB Mujeres: 10 * P + 6.25 * T - 5 * E - 161
-    tmb = 10 * pesoUtilizar + 6.25 * datos.talla - 5 * datos.edad - 161;
+    // TMB Mujeres: 655, I + (9,56 x P) + (1,85 x T) - (4,68 x E)
+    tmb = 655.1 + (9.56 * pesoUtilizar) + (1.85 * datos.talla) - (4.68 * datos.edad);
   }
   
   // Valor Calórico Total (VCT) = TMB * Factor AF
@@ -210,7 +209,7 @@ function realizarCalculos(e) {
   const resultadosDiv = document.getElementById('resultados');
   resultadosDiv.style.display = 'block';
 
-  // Usar un pequeño retraso para asegurar que el elemento esté visible antes de hacer scroll
+  // Usar requestAnimationFrame para asegurar que el scroll funcione correctamente en móviles
   window.requestAnimationFrame(() => {
     resultadosDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
