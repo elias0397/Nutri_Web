@@ -199,34 +199,34 @@ function realizarCalculos(e) {
 
 
   // =====================================================
-  // 7) Mostrar todos los resultados y Scroll
+  // 7) Mostrar todos los resultados y Scroll (REPARADO)
   // =====================================================
   
-  // Resultados Energía
+  // Resultados Energía (REPARADOS)
   document.getElementById('pesoAjustadoRes').textContent = pesoUtilizar.toFixed(1).replace('.', ',');
   document.getElementById('formulaPracticaRes').textContent = formulaPractica.toFixed(1).replace('.', ',');
   document.getElementById('harrisBenedictRes').textContent = tmb.toFixed(1).replace('.', ',');
   document.getElementById('vctRes').textContent = vct.toFixed(1).replace('.', ','); 
 
-  // Resultados IMC
+  // Resultados IMC (REPARADOS)
   document.getElementById('imcAutoRes').textContent = imc.toFixed(2).replace('.', ',');
-  document.getElementById('imcAutoCat').textContent = imcCat;
+  // Eliminamos imcAutoCat en el HTML, solo actualizamos el chip
   const imcChip = document.getElementById('imcAutoChip');
   imcChip.className = imcClass;
   imcChip.textContent = imcCat;
 
-  // Resultados Contextura/Peso Ideal
+  // Resultados Contextura/Peso Ideal (REPARADOS)
   document.getElementById('ctxValor').textContent = valorCtx.toFixed(2).replace('.', ',');
   document.getElementById('ctxTipo').textContent = tipoCtx;
   document.getElementById('pesoIdealRes').textContent = pesoIdeal.toFixed(1).replace('.', ',');
   document.getElementById('ppiRes').textContent = ppi.toFixed(1).replace('.', ',') + '%';
   
-  // Resultados PPI
+  // Resultados PPI (REPARADOS)
   const ppiChip = document.getElementById('ppiChip');
   ppiChip.className = ppiClass;
   ppiChip.textContent = interpretacion; 
 
-  // Resultados Cintura/Talla
+  // Resultados Cintura/Talla (REPARADOS)
   document.getElementById('cinturaTalla').textContent = cinturaTallaRatio.toFixed(2).replace('.', ',');
 
   const aviso = document.getElementById('riesgoCintura');
