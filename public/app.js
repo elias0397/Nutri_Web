@@ -1,7 +1,6 @@
 // app.js
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('formCalculos');
-  const resultadosDiv = document.getElementById('resultados');
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -101,8 +100,7 @@ function calcularNutricion() {
     ict = cintura / tallaCm;
   }
 
-  // --- MOSTRAR RESULTADOS ---
-  document.getElementById('resultados').style.display = 'block';
+  // --- ASIGNAR RESULTADOS AL DOM (antes de mostrar) ---
   
   // Contextura
   document.getElementById('ctxValor').textContent = contexturaVal > 0 ? contexturaVal.toFixed(2).replace('.', ',') : "-";
@@ -122,7 +120,7 @@ function calcularNutricion() {
   // Cintura/Talla
   document.getElementById('cinturaTalla').textContent = ict.toFixed(2).replace('.', ',');
   
-  // Alerta de riesgo (ICT > 0.5 es riesgo elevado)
+  // Alerta de riesgo
   const alerta = document.getElementById('riesgoCintura');
   if (ict > 0.5) {
     alerta.textContent = "¡RIESGO ELEVADO! Riesgo cardiovascular por relación cintura/talla elevada (> 0.5)";
@@ -131,6 +129,13 @@ function calcularNutricion() {
     alerta.style.display = 'none';
   }
 
-  // Scroll suave hacia resultados (útil en móviles)
-  document.getElementById('resultados').scrollIntoView({ behavior: 'smooth' });
+  // --- MOSTRAR RESULTADOS con Retraso (SOLUCIÓN MÓVIL) ---
+  // El setTimeout de 50ms asegura que el navegador tenga tiempo para
+  // manejar la salida del formulario o el teclado virtual antes de hacer scroll.
+  setTimeout(() => {
+    document.getElementById('resultados').style.display = 'block';
+    
+    // Scroll suave hacia resultados
+    document.getElementById('resultados').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 50); 
 }

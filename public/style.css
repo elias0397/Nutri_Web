@@ -40,7 +40,6 @@ h1 {
 /* --- FORMULARIO Y GRID RESPONSIVO --- */
 .form-grid {
   display: grid;
-  /* Grid adaptable: columnas de mínimo 280px, si no hay espacio, se apilan */
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
   gap: 20px;
   margin-bottom: 20px;
@@ -183,7 +182,6 @@ button:active {
     font-size: 1.5rem;
   }
   
-  /* Apila las filas de resultados en móvil para mejor lectura */
   .result-row {
     flex-direction: column;
     align-items: flex-start;
