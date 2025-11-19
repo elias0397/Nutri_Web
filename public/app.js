@@ -143,12 +143,13 @@ function realizarCalculos(e) {
   document.getElementById('ctxValor').textContent = valorCtx.toFixed(2).replace('.', ',');
   document.getElementById('ctxTipo').textContent = tipoCtx;
   document.getElementById('pesoIdealRes').textContent = pesoIdeal.toFixed(1).replace('.', ',');
+  // Solo el valor numérico va aquí
   document.getElementById('ppiRes').textContent = ppi.toFixed(1).replace('.', ',') + '%';
-  document.getElementById('interpretacionRes').textContent = interpretacion;
   
+  // **Alineación corregida:** El chip se alinea a la derecha para la Interpretación PPI.
   const chip = document.getElementById('ppiChip');
   chip.className = ppiClass;
-  chip.textContent = interpretacion;
+  chip.textContent = interpretacion; 
 
   document.getElementById('imcRes').textContent = imc.toFixed(1).replace('.', ',');
   document.getElementById('imcCat').textContent = imcCategoria;
@@ -162,7 +163,6 @@ function realizarCalculos(e) {
   }
 
   // Mostrar la tarjeta de resultados y hacer scroll suave
-  // El setTimeout es la solución para dispositivos móviles (asincronía de teclado).
   setTimeout(() => {
     document.getElementById('resultados').style.display = 'block';
     document.getElementById('resultados').scrollIntoView({ behavior: 'smooth', block: 'start' });
