@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+// Worker que sirve el HTML de la calculadora de dieta
+export default {
+  async fetch(request, env, ctx) {
+    const html = `<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -262,8 +265,8 @@
         <label for="sexo">Sexo</label>
         <select id="sexo" required>
           <option value="">Selecciona...</option>
-          <option value="h">Masculino</option>
-          <option value="m">Femenino</option>
+          <option value="h">Hombre</option>
+          <option value="m">Mujer</option>
         </select>
       </div>
 
@@ -374,4 +377,13 @@
     }
   </script>
 </body>
-</html>
+</html>`;
+
+    return new Response(html, {
+      headers: {
+        'Content-Type': 'text/html; charset=UTF-8',
+      },
+    });
+  },
+};
+
