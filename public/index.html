@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NutriWeb - Sistema de Cálculo Nutricional</title>
+  <title>NutriWeb - Herramienta de Cálculo Nutricional</title>
   
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>🍎 NutriWeb - Sistema de Cálculo Nutricional</h1>
+    <h1>🍎 NutriWeb - Herramienta de Cálculo Nutricional</h1>
 
     <form id="formCalculos">
       <div class="section-header">Datos del paciente para cálculos:</div>
@@ -17,7 +17,7 @@
       <div class="form-grid">
         <div class="input-group full-width">
           <label for="nombre">Nombre y Apellido:</label>
-          <input type="text" id="nombre" required />
+          <input type="text" id="nombre" required placeholder="Opcional, no se guardará en ninguna parte. Solo se usará para el reporte"/>
         </div>
 
         <div class="input-group">
@@ -32,12 +32,12 @@
 
         <div class="input-group">
           <label for="peso">Peso actual: <span class="unit">KG</span></label>
-          <input type="text" id="peso" required placeholder="Ej: 72,5" /> 
+          <input type="text" id="peso" required placeholder="Ej: 72,5. Requerido para calculos" /> 
         </div>
 
         <div class="input-group">
           <label for="talla">Talla: <span class="unit">CM</span></label>
-          <input type="text" id="talla" required placeholder="Ej: 167,8" />
+          <input type="text" id="talla" required placeholder="Ej: 167,8. Requerido para calculos" />
           <div class="note info">La talla en metros para el IMC se calcula automáticamente.</div>
         </div>
 
@@ -52,23 +52,23 @@
 
         <div class="input-group">
           <label for="cintura">CIA DE CINTURA: <span class="unit">CM</span></label>
-          <input type="text" id="cintura" required placeholder="Ej: 92,5" />
+          <input type="text" id="cintura" required placeholder="Ej: 92,5. Requerido para calculos" />
           <div class="note">> 100 CM indica riesgo cardiovascular.</div>
         </div>
 
         <div class="input-group">
           <label for="muneca">CIA de Muñeca: <span class="unit">CM</span></label>
-          <input type="text" id="muneca" required placeholder="Ej: 16,2" />
+          <input type="text" id="muneca" required placeholder="Ej: 16,2. Requerido para calculos" />
         </div>
         
         <div class="input-group">
           <label for="factorActividad">Factor de Actividad (FA):</label>
-          <input type="text" id="factorActividad" required placeholder="Ej: 1,3 (Sedentario)" />
+          <input type="text" id="factorActividad" required placeholder="Ej: 1,3 (Sedentario). Requerido para calculos" />
         </div>
 
         <div class="input-group">
           <label for="factorInjuria">Factor de Injuria (FI):</label>
-          <input type="text" id="factorInjuria" required placeholder="Ej: 1,0 (Sin estrés), 1,5 (Sepsis)" />
+          <input type="text" id="factorInjuria" required placeholder="Ej: 1,0 (Sin estrés), 1,5 (Sepsis). Requerido" />
         </div>
         </div>
 
