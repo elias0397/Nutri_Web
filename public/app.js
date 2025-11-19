@@ -43,7 +43,6 @@ function realizarCalculos(e) {
     y_val: getData('y_val'),
     z_val: getData('z_val'),
     pesoIdealManual: getData('pesoIdealManual'),
-    // Factores reintroducidos
     factorActividad: getData('factorActividad'),
     factorInjuria: getData('factorInjuria')
   };
@@ -51,7 +50,6 @@ function realizarCalculos(e) {
   // =====================================================
   // 2) Validaciones básicas
   // =====================================================
-  // Se añaden los nuevos factores a la lista de requeridos
   const numerosRequeridos = ['peso','talla','cintura','muneca', 'factorActividad', 'factorInjuria']; 
   for (const key of numerosRequeridos) {
     if (isNaN(datos[key]) || datos[key] <= 0) {
@@ -72,10 +70,12 @@ function realizarCalculos(e) {
   // 3) Cálculo de Peso Ideal y PPI
   // =====================================================
   let pesoIdeal = NaN;
+  // Cálculo automático del Peso Ideal
   if (!isNaN(datos.x_val) && !isNaN(datos.y_val) && !isNaN(datos.z_val) && datos.z_val !== 0) {
     pesoIdeal = (datos.x_val + datos.y_val) / datos.z_val;
     document.getElementById('pesoIdealManual').value = pesoIdeal.toFixed(1).replace('.', ','); 
   }
+  // Uso del Peso Ideal Manual si está disponible
   if (!isNaN(datos.pesoIdealManual) && datos.pesoIdealManual > 0) {
     pesoIdeal = datos.pesoIdealManual;
     document.getElementById('pesoIdealManual').value = pesoIdeal.toFixed(1).replace('.', ',');
@@ -120,13 +120,13 @@ function realizarCalculos(e) {
   
   let pesoUtilizar;
   // Determinar Peso a utilizar (Peso Actual o Peso Ajustado - PA)
-  // Si el paciente tiene sobrepeso o es obeso (IMC >= 25 O PPI >= 110%), se usa Peso Ajustado.
+  // CONDICIÓN: Si el paciente tiene sobrepeso o es obeso (IMC >= 25 O PPI >= 110%), se usa Peso Ajustado.
   if (imc >= 25 || ppi >= 110) {
-    // PA = PI + 0.25 * (Peso Actual - PI)
-    const PA = pesoIdeal + 0.25 * (datos.peso - pesoIdeal);
+    // FÓRMULA PESO AJUSTADO: (Peso actual - peso ideal)x 0,25 + Peso ideal
+    const PA = (datos.peso - pesoIdeal) * 0.25 + pesoIdeal;
     pesoUtilizar = PA;
   } else {
-    // Si no hay sobrepeso/obesidad, se usa el Peso Actual.
+    // Si no cumple la condición, se usa el Peso Actual.
     pesoUtilizar = datos.peso;
   }
   
@@ -159,7 +159,7 @@ function realizarCalculos(e) {
   const formulaPractica = pesoParaPractica * factorKcal;
 
 
-  // 5.2) Harris-Benedict Original (GMR) - Usa Talla en CM y el Peso a Utilizar
+  // 5.2) Harris-Benedict Original (TMB/GMR) - Usa Talla en CM y el Peso a Utilizar
   let tmb;
   if (datos.sexo === 'masculino') {
     // TMB Hombres: 66,47 + (13, 75 x P) + (5 x T) - (6,75 x E)
@@ -169,7 +169,8 @@ function realizarCalculos(e) {
     tmb = 655.1 + (9.56 * pesoUtilizar) + (1.85 * datos.talla) - (4.68 * datos.edad);
   }
   
-  // Valor Calórico Total (VCT) = TMB * Factor Actividad * Factor Injuria
+  // 5.3) Valor Calórico Total (VCT)
+  // VCT = TMB x Factor Actividad x Factor Injuria
   const vct = tmb * datos.factorActividad * datos.factorInjuria;
 
 
@@ -198,7 +199,7 @@ function realizarCalculos(e) {
 
 
   // =====================================================
-  // 7) Mostrar todos los resultados y Scroll (MEJORA MÓVIL)
+  // 7) Mostrar todos los resultados y Scroll
   // =====================================================
   
   // Resultados Energía
