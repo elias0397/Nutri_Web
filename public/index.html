@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NutriWeb - Sistema de Cálculo Nutricional</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -11,71 +11,143 @@
     <h1>🍎 NutriWeb - Sistema de Cálculo Nutricional</h1>
 
     <form id="formCalculos" onsubmit="realizarCalculos(event)">
-      <div class="section-header">Datos del paciente</div>
+      <div class="section-header">Datos del paciente para cálculos:</div>
+      
       <div class="form-grid">
         <div class="input-group full-width">
-          <label>Nombre y Apellido:</label>
-          <input type="text" id="nombre" required>
+          <label for="nombre">Nombre y Apellido:</label>
+          <input type="text" id="nombre" required />
         </div>
+
         <div class="input-group">
-          <label>Edad (años):</label>
-          <input type="number" id="edad" min="1" max="120" required>
+          <label for="fecha">Fecha:</label>
+          <input type="date" id="fecha" required />
         </div>
+
         <div class="input-group">
-          <label>Peso (kg):</label>
-          <input type="number" id="peso" step="0.1" min="1" max="500" required>
+          <label for="edad">Edad: <span class="unit">AÑOS</span></label>
+          <input type="number" id="edad" min="1" max="120" required />
         </div>
+
         <div class="input-group">
-          <label>Talla (cm):</label>
-          <input type="number" id="talla" step="0.1" min="50" max="300" required>
+          <label for="peso">Peso actual: <span class="unit">KG</span></label>
+          <input type="number" id="peso" step="0.1" min="1" max="500" required />
         </div>
+
         <div class="input-group">
-          <label>Sexo:</label>
+          <label for="talla">Talla: <span class="unit">CM</span></label>
+          <input type="number" id="talla" step="0.1" min="50" max="300" required />
+        </div>
+
+        <div class="input-group">
+          <label for="sexo">Sexo:</label>
           <select id="sexo" required>
             <option value="">Selecciona...</option>
             <option value="masculino">Masculino</option>
             <option value="femenino">Femenino</option>
           </select>
         </div>
+
         <div class="input-group">
-          <label>Cintura (cm):</label>
-          <input type="number" id="cintura" step="0.1" min="1" max="200" required>
+          <label for="cintura">CIA DE CINTURA: <span class="unit">CM</span></label>
+          <input type="number" id="cintura" step="0.1" min="1" max="200" required />
+          <div class="note">> 100 CM indica riesgo cardiovascular.</div>
         </div>
+
         <div class="input-group">
-          <label>Muñeca (cm):</label>
-          <input type="number" id="muneca" step="0.1" min="1" max="50" required>
-        </div>
-        <div class="input-group">
-          <label>X:</label>
-          <input type="number" id="x_val" step="0.1">
-        </div>
-        <div class="input-group">
-          <label>Y:</label>
-          <input type="number" id="y_val" step="0.1">
-        </div>
-        <div class="input-group">
-          <label>Z:</label>
-          <input type="number" id="z_val" step="0.1">
-        </div>
-        <div class="input-group full-width">
-          <label>Peso Ideal (manual u automático):</label>
-          <input type="number" id="pesoIdealManual" step="0.1">
+          <label for="muneca">CIA de Muñeca: <span class="unit">CM</span></label>
+          <input type="number" id="muneca" step="0.1" min="1" max="50" required />
         </div>
       </div>
+
+      <div class="section-header">Peso Ideal (según tabla)</div>
+      <div class="form-grid">
+        <div class="input-group">
+          <label for="x_val">Valor 1 (tabla peso ideal):</label>
+          <input type="number" id="x_val" step="0.1" placeholder="Ej: 71.2" />
+        </div>
+        <div class="input-group">
+          <label for="y_val">Valor 2 (tabla peso ideal):</label>
+          <input type="number" id="y_val" step="0.1" placeholder="Ej: 80" />
+        </div>
+        <div class="input-group">
+          <label for="z_val">Divisor (tabla peso ideal):</label>
+          <input type="number" id="z_val" step="0.1" placeholder="Ej: 2" />
+        </div>
+
+        <div class="input-group full-width">
+          <label for="pesoIdealManual">Peso ideal calculado (automático) — o ingresa manual si prefieres:</label>
+          <input type="number" id="pesoIdealManual" step="0.1" placeholder="Se calcula desde (x+y)/z o puedes escribirlo manualmente" />
+          <div class="small-note">Si completas X,Y,Z el sistema calculará automáticamente el Peso ideal = (X + Y) / Z. Si quieres, puedes sobreescribir manualmente aquí.</div>
+        </div>
+      </div>
+
+      <div class="section-header">Dx. Médico:</div>
+      <div class="input-group">
+        <label for="dxMedico">Diagnóstico Médico:</label>
+        <textarea id="dxMedico" placeholder="Ingrese diagnóstico médico..."></textarea>
+      </div>
+
+      <div class="section-header">Dx. Nutricional:</div>
+      <div class="input-group">
+        <label for="dxNutricional">Diagnóstico Nutricional:</label>
+        <textarea id="dxNutricional" placeholder="Siempre el peor rango..."></textarea>
+        <div class="note info">Siempre el peor rango.</div>
+      </div>
+
       <button type="submit">Realizar cálculos</button>
     </form>
 
+    <!-- Resultados -->
     <div id="resultados" class="result-card" style="display:none;">
-      <h2 style="text-align:center;">📊 Resultados</h2>
-      <div>Contextura corporal: <span id="ctxValor"></span> — <span id="ctxTipo"></span></div>
-      <div>Peso Ideal: <span id="pesoIdealRes"></span></div>
-      <div>% Peso Ideal: <span id="ppiRes"></span> — <span id="ppiChip"></span></div>
-      <div>IMC: <span id="imcRes"></span> — <span id="imcCat"></span></div>
-      <div>Relación cintura/talla: <span id="cinturaTalla"></span></div>
-      <div id="riesgoCintura" style="display:none; color:red; font-weight:700;">Riesgo cardiovascular</div>
+      <h2 style="text-align:center; margin-bottom:20px; color:#333;">📊 Resultados del Análisis</h2>
+
+      <div class="result-row">
+        <div class="result-label">Contextura corporal (talla/muneca):</div>
+        <div class="result-value"><span id="ctxValor"></span></div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">Tipo de contextura:</div>
+        <div class="result-value"><span id="ctxTipo"></span></div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">Peso ideal (kg):</div>
+        <div class="result-value"><span id="pesoIdealRes"></span></div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">% Peso Ideal (PPI):</div>
+        <div class="result-value"><span id="ppiRes"></span> <span id="ppiChip" class=""></span></div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">Interpretación PPI:</div>
+        <div class="result-value"><span id="interpretacionRes"></span></div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">IMC:</div>
+        <div class="result-value"><span id="imcRes"></span></div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">Categoría IMC:</div>
+        <div class="result-value"><span id="imcCat"></span></div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">Relación cintura / talla:</div>
+        <div class="result-value"><span id="cinturaTalla"></span></div>
+      </div>
+
+      <div id="riesgoCintura" class="small-note" style="display:none; color:#c62828; font-weight:700; margin-top:12px;">
+        Riesgo cardiovascular por relación cintura/talla elevada (> 0.5)
+      </div>
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
