@@ -1,6 +1,6 @@
-name = "nutriweb"
-main = ""
+name = "Nutri-web"
+main = "workers-site/index.js"
 compatibility_date = "2025-11-19"
 
 [site]
-bucket = "."          # <-- la raíz del repositorio
+bucket = "./public"
