@@ -1,0 +1,7 @@
+name = "nutriweb"
+main = ""        # <-- vacía si solo es sitio estático
+compatibility_date = "2025-11-19"
+
+[site]
+bucket = "./public"
+entry-point = ""   # eliminar, es obsoleto
