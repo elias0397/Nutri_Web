@@ -1,64 +1,119 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    background: #f4f4f4;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
 }
 
-h1, h2 {
-    text-align: center;
+.container {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  padding: 40px;
+  max-width: 1000px;
+  margin: auto;
+  animation: fadeIn 0.5s ease-in;
 }
 
-form {
-    max-width: 600px;
-    margin: auto;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-label {
-    display: block;
-    margin-bottom: 15px;
+h1 {
+  color: #333;
+  margin-bottom: 30px;
+  text-align: center;
 }
+
+/* Secciones */
+.section-header {
+  background: #6c757d;
+  color: white;
+  padding: 12px 20px;
+  margin: 30px 0 20px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.input-group { margin-bottom: 20px; }
+.input-group.full-width { grid-column: 1 / -1; }
+
+/* Inputs */
+label { font-weight: 600; margin-bottom: 8px; color: #444; display:block; }
 
 input, select, textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border-radius: 4px;
-    border: 1px solid #aaa;
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 2px solid #e0e0e0;
+  background: #fffef0;
+  font-size: 16px;
+  transition: all 0.3s ease;
 }
 
+input:focus, select:focus, textarea:focus {
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+}
+
+textarea { resize: vertical; }
+
+/* Chips */
+.chip { padding: 6px 10px; border-radius: 999px; color:white; font-weight:700; }
+.chip.normal { background:#2e7d32; }
+.chip.sobrepeso { background:#ff9800; }
+.chip.obesidad { background:#d32f2f; }
+.chip.desnutricion { background:#6a1b9a; }
+
+/* Botón */
 button {
-    width: 100%;
-    padding: 12px;
-    background: #008cff;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  border: none;
+  border-radius: 10px;
+  color:white;
+  font-size:18px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:20px;
 }
 
 button:hover {
-    background: #006bd6;
+  transform: translateY(-2px);
 }
 
-#resultados {
-    max-width: 600px;
-    background: #fff;
-    margin: 20px auto;
-    padding: 20px;
-    border-radius: 8px;
+/* Resultados */
+.result-card {
+  margin-top: 40px;
+  background:#f8f9fa;
+  padding:20px;
+  border-radius:15px;
+  border:2px solid #e0e0e0;
 }
 
-.chip {
-    padding: 4px 8px;
-    border-radius: 6px;
-    color: white;
+.result-row {
+  display:flex;
+  justify-content:space-between;
+  margin:8px 0;
 }
 
-.obesidad { background-color: #d9534f; }
-.sobrepeso { background-color: #f0ad4e; }
-.normal { background-color: #5cb85c; }
-.desnutricion { background-color: #0275d8; }
+.result-label { font-weight:600; color:#333; }
+.result-value { font-weight:700; }
+
+/* Responsive */
+@media (max-width:768px) {
+  .form-grid { grid-template-columns:1fr; }
+  .container { padding:25px; }
+}
