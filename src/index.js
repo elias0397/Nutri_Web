@@ -2,11 +2,12 @@
 export default {
   async fetch(request, env, ctx) {
     const html = `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calculadora de Dieta - NutriWeb</title>
+  <title>NutriWeb - Sistema de Gestión Nutricional</title>
   <style>
     * {
       margin: 0;
@@ -19,9 +20,6 @@ export default {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
     .container {
@@ -29,8 +27,8 @@ export default {
       border-radius: 20px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       padding: 40px;
-      max-width: 600px;
-      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
       animation: fadeIn 0.5s ease-in;
     }
 
@@ -47,20 +45,34 @@ export default {
 
     h1 {
       color: #333;
-      margin-bottom: 10px;
+      margin-bottom: 30px;
       font-size: 2em;
       text-align: center;
     }
 
-    .subtitle {
-      text-align: center;
-      color: #666;
-      margin-bottom: 30px;
-      font-size: 0.95em;
+    .section-header {
+      background: #6c757d;
+      color: white;
+      padding: 12px 20px;
+      margin: 30px 0 20px 0;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1.1em;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
     }
 
     .input-group {
       margin-bottom: 20px;
+    }
+
+    .input-group.full-width {
+      grid-column: 1 / -1;
     }
 
     label {
@@ -71,27 +83,50 @@ export default {
       font-size: 0.95em;
     }
 
-    input, select {
+    input, select, textarea {
       width: 100%;
       padding: 12px 15px;
       border-radius: 10px;
       border: 2px solid #e0e0e0;
       font-size: 16px;
       transition: all 0.3s ease;
-      background: #f9f9f9;
+      background: #fffef0;
+      font-family: inherit;
     }
 
-    input:focus, select:focus {
+    input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: #667eea;
       background: white;
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .unit {
+      color: #666;
+      font-size: 0.9em;
+      margin-left: 5px;
+    }
+
+    .note {
+      font-size: 0.85em;
+      color: #d9534f;
+      margin-top: 5px;
+      font-style: italic;
+    }
+
+    .note.info {
+      color: #5bc0de;
+    }
+
     button {
       width: 100%;
       padding: 15px;
-      margin-top: 10px;
+      margin-top: 20px;
       border: none;
       border-radius: 10px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -112,120 +147,11 @@ export default {
       transform: translateY(0);
     }
 
-    .results {
-      margin-top: 30px;
-      padding: 25px;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      border-radius: 15px;
-      display: none;
-      animation: slideDown 0.5s ease-out;
-    }
-
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
 
-    .results.show {
-      display: block;
-    }
-
-    .results h3 {
-      color: #333;
-      margin-bottom: 20px;
-      font-size: 1.5em;
-      text-align: center;
-    }
-
-    .result-item {
-      background: white;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .result-label {
-      font-weight: 600;
-      color: #555;
-    }
-
-    .result-value {
-      font-size: 1.3em;
-      font-weight: 700;
-      color: #667eea;
-    }
-
-    .macros {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .macro-item {
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      text-align: center;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .macro-label {
-      font-size: 0.85em;
-      color: #666;
-      margin-bottom: 5px;
-    }
-
-    .macro-value {
-      font-size: 1.2em;
-      font-weight: 700;
-      color: #333;
-    }
-
-    .goals {
-      margin-top: 20px;
-      padding: 15px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .goals h4 {
-      color: #333;
-      margin-bottom: 10px;
-    }
-
-    .goal-item {
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .goal-item:last-child {
-      border-bottom: none;
-    }
-
-    .goal-label {
-      color: #666;
-    }
-
-    .goal-value {
-      font-weight: 600;
-      color: #333;
-    }
-
-    @media (max-width: 600px) {
       .container {
         padding: 25px;
       }
@@ -233,148 +159,112 @@ export default {
       h1 {
         font-size: 1.5em;
       }
-
-      .macros {
-        grid-template-columns: 1fr;
-      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🍎 Calculadora de Dieta</h1>
-    <p class="subtitle">Calcula tu metabolismo basal y necesidades calóricas</p>
+    <h1>🍎 NutriWeb - Sistema de Gestión Nutricional</h1>
 
-    <form id="formCalc" onsubmit="calculateResults(event)">
-      <div class="input-group">
-        <label for="peso">Peso (kg)</label>
-        <input type="number" id="peso" step="0.1" min="1" max="500" required />
-      </div>
-
-      <div class="input-group">
-        <label for="altura">Altura (cm)</label>
-        <input type="number" id="altura" step="0.1" min="50" max="300" required />
-      </div>
-
-      <div class="input-group">
-        <label for="edad">Edad</label>
-        <input type="number" id="edad" min="1" max="120" required />
-      </div>
-
-      <div class="input-group">
-        <label for="sexo">Sexo</label>
-        <select id="sexo" required>
-          <option value="">Selecciona...</option>
-          <option value="h">Hombre</option>
-          <option value="m">Mujer</option>
-        </select>
-      </div>
-
-      <div class="input-group">
-        <label for="actividad">Nivel de actividad</label>
-        <select id="actividad" required>
-          <option value="">Selecciona...</option>
-          <option value="1.2">Sedentario (poco o nada de ejercicio)</option>
-          <option value="1.375">Ligero (ejercicio 1-3 días/semana)</option>
-          <option value="1.55">Moderado (ejercicio 3-5 días/semana)</option>
-          <option value="1.725">Intenso (ejercicio 6-7 días/semana)</option>
-          <option value="1.9">Muy intenso (ejercicio 2 veces/día)</option>
-        </select>
-      </div>
-
-      <button type="submit">Calcular</button>
-    </form>
-
-    <div id="results" class="results">
-      <h3>📊 Tus Resultados</h3>
+    <form id="formPaciente" onsubmit="guardarDatos(event)">
+      <div class="section-header">Datos personales del paciente:</div>
       
-      <div class="result-item">
-        <span class="result-label">Tasa Metabólica Basal (TMB)</span>
-        <span class="result-value" id="tmb">0</span>
+      <div class="form-grid">
+        <div class="input-group full-width">
+          <label for="nombre">Nombre y Apellido:</label>
+          <input type="text" id="nombre" required />
+        </div>
+
+        <div class="input-group">
+          <label for="fecha">Fecha:</label>
+          <input type="date" id="fecha" required />
+        </div>
+
+        <div class="input-group">
+          <label for="edad">Edad: <span class="unit">AÑOS</span></label>
+          <input type="number" id="edad" min="1" max="120" required />
+        </div>
+
+        <div class="input-group">
+          <label for="peso">Peso actual: <span class="unit">KG</span></label>
+          <input type="number" id="peso" step="0.1" min="1" max="500" required />
+        </div>
+
+        <div class="input-group">
+          <label for="talla">Talla: <span class="unit">CM</span></label>
+          <input type="number" id="talla" step="0.1" min="50" max="300" required />
+        </div>
+
+        <div class="input-group">
+          <label for="sexo">Sexo:</label>
+          <select id="sexo" required>
+            <option value="">Selecciona...</option>
+            <option value="masculino">Masculino</option>
+            <option value="femenino">Femenino</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="cintura">CIA DE CINTURA: <span class="unit">CM</span></label>
+          <input type="number" id="cintura" step="0.1" min="1" max="200" required />
+          <div class="note">> 100 CM indica riesgo cardiovascular.</div>
+        </div>
+
+        <div class="input-group">
+          <label for="muneca">CIA de Muñeca: <span class="unit">CM</span></label>
+          <input type="number" id="muneca" step="0.1" min="1" max="50" required />
+        </div>
       </div>
 
-      <div class="result-item">
-        <span class="result-label">Calorías de Mantenimiento</span>
-        <span class="result-value" id="mantenimiento">0</span>
+      <div class="section-header">Dx. Médico:</div>
+      <div class="input-group">
+        <label for="dxMedico">Diagnóstico Médico:</label>
+        <textarea id="dxMedico" placeholder="Ingrese el diagnóstico médico del paciente..."></textarea>
       </div>
 
-      <div class="macros">
-        <div class="macro-item">
-          <div class="macro-label">Proteínas</div>
-          <div class="macro-value" id="proteinas">0g</div>
-        </div>
-        <div class="macro-item">
-          <div class="macro-label">Carbohidratos</div>
-          <div class="macro-value" id="carbohidratos">0g</div>
-        </div>
-        <div class="macro-item">
-          <div class="macro-label">Grasas</div>
-          <div class="macro-value" id="grasas">0g</div>
-        </div>
+      <div class="section-header">Dx. Nutricional:</div>
+      <div class="input-group">
+        <label for="dxNutricional">Diagnóstico Nutricional:</label>
+        <textarea id="dxNutricional" placeholder="Siempre el peor rango..."></textarea>
+        <div class="note info">Siempre el peor rango.</div>
       </div>
 
-      <div class="goals">
-        <h4>🎯 Objetivos Calóricos</h4>
-        <div class="goal-item">
-          <span class="goal-label">Pérdida de peso (déficit 20%)</span>
-          <span class="goal-value" id="perdida">0 kcal</span>
-        </div>
-        <div class="goal-item">
-          <span class="goal-label">Mantenimiento</span>
-          <span class="goal-value" id="mantenimiento-goal">0 kcal</span>
-        </div>
-        <div class="goal-item">
-          <span class="goal-label">Aumento de peso (superávit 20%)</span>
-          <span class="goal-value" id="aumento">0 kcal</span>
-        </div>
-      </div>
-    </div>
+      <button type="submit">Guardar Datos del Paciente</button>
+    </form>
   </div>
 
   <script>
-    function calculateResults(e) {
+    function guardarDatos(e) {
       e.preventDefault();
 
-      const peso = parseFloat(document.getElementById('peso').value);
-      const altura = parseFloat(document.getElementById('altura').value);
-      const edad = parseInt(document.getElementById('edad').value);
-      const sexo = document.getElementById('sexo').value;
-      const actividad = parseFloat(document.getElementById('actividad').value);
+      const datos = {
+        nombre: document.getElementById('nombre').value,
+        fecha: document.getElementById('fecha').value,
+        edad: parseInt(document.getElementById('edad').value),
+        peso: parseFloat(document.getElementById('peso').value),
+        talla: parseFloat(document.getElementById('talla').value),
+        sexo: document.getElementById('sexo').value,
+        cintura: parseFloat(document.getElementById('cintura').value),
+        muneca: parseFloat(document.getElementById('muneca').value),
+        dxMedico: document.getElementById('dxMedico').value,
+        dxNutricional: document.getElementById('dxNutricional').value
+      };
 
-      // Calcular TMB (Fórmula de Mifflin-St Jeor)
-      let tmb;
-      if (sexo === 'h') {
-        tmb = 10 * peso + 6.25 * altura - 5 * edad + 5;
-      } else {
-        tmb = 10 * peso + 6.25 * altura - 5 * edad - 161;
+      // Validar riesgo cardiovascular
+      if (datos.cintura > 100) {
+        alert('⚠️ ADVERTENCIA: La circunferencia de cintura es mayor a 100 CM. Indica riesgo cardiovascular.');
       }
 
-      const mantenimiento = tmb * actividad;
-
-      // Calcular macros (distribución estándar: 30% proteínas, 40% carbohidratos, 30% grasas)
-      const proteinas = Math.round((mantenimiento * 0.30) / 4); // 4 kcal por gramo
-      const carbohidratos = Math.round((mantenimiento * 0.40) / 4); // 4 kcal por gramo
-      const grasas = Math.round((mantenimiento * 0.30) / 9); // 9 kcal por gramo
-
-      // Calcular objetivos calóricos
-      const perdida = Math.round(mantenimiento * 0.80);
-      const aumento = Math.round(mantenimiento * 1.20);
-
-      // Mostrar resultados
-      document.getElementById('tmb').textContent = Math.round(tmb) + ' kcal';
-      document.getElementById('mantenimiento').textContent = Math.round(mantenimiento) + ' kcal';
-      document.getElementById('mantenimiento-goal').textContent = Math.round(mantenimiento) + ' kcal';
-      document.getElementById('proteinas').textContent = proteinas + 'g';
-      document.getElementById('carbohidratos').textContent = carbohidratos + 'g';
-      document.getElementById('grasas').textContent = grasas + 'g';
-      document.getElementById('perdida').textContent = perdida + ' kcal';
-      document.getElementById('aumento').textContent = aumento + ' kcal';
-
-      // Mostrar sección de resultados
-      const resultsDiv = document.getElementById('results');
-      resultsDiv.classList.add('show');
-      resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      console.log('Datos del paciente:', datos);
+      
+      // Aquí puedes agregar la lógica para guardar los datos
+      // Por ejemplo: enviar a un servidor, guardar en localStorage, etc.
+      
+      alert('✅ Datos del paciente guardados correctamente');
     }
+
+    // Establecer fecha actual por defecto
+    document.getElementById('fecha').valueAsDate = new Date();
   </script>
 </body>
 </html>`;
