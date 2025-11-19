@@ -258,17 +258,24 @@ export default {
       <div class="section-header">Peso Ideal (según tabla)</div>
       <div class="form-grid">
         <div class="input-group">
-          <label for="x_val">Valor X (tabla):</label>
+          <label for="x_val">Valor 1 (tabla peso ideal):</label>
           <input type="number" id="x_val" step="0.1" placeholder="Ej: 71.2" />
         </div>
         <div class="input-group">
-          <label for="y_val">Valor Y (tabla):</label>
+          <label for="y_val">Valor 2 (tabla peso idea):</label>
           <input type="number" id="y_val" step="0.1" placeholder="Ej: 80" />
         </div>
         <div class="input-group">
-          <label for="z_val">Divisor Z (tabla):</label>
+          <label for="z_val">Divisor (tabla peso idea):</label>
           <input type="number" id="z_val" step="0.1" placeholder="Ej: 2" />
         </div>
+
+        <div class="input-group full-width">
+          <label for="pesoIdealManual">Peso ideal calculado (automático) — o ingresa manual si prefieres:</label>
+          <input type="number" id="pesoIdealManual" step="0.1" placeholder="Se calcula desde (x+y)/z o puedes escribirlo manualmente" />
+          <div class="small-note">Si completas X,Y,Z el sistema calculará automáticamente el Peso ideal = (X + Y) / Z. Si quieres, puedes sobreescribir manualmente aquí.</div>
+        </div>
+      </div>
 
         <div class="input-group full-width">
           <label for="pesoIdealManual">Peso ideal calculado (automático) — o ingresa manual si prefieres:</label>
