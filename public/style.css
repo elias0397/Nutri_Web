@@ -1,4 +1,4 @@
-/* style.css (Estilo Moderno) */
+/* style.css (Estilo Moderno y Limpio) */
 * {
   margin: 0;
   padding: 0;
@@ -154,7 +154,7 @@ button:active {
   border-radius: 999px; /* Chip redondeado */
   font-weight: 700;
   color: white;
-  margin-left: 8px;
+  margin-left: 8px; /* Pequeño margen para separarlo de la etiqueta */
   font-size: 0.95em;
 }
 .chip.normal { background: #2e7d32; }        /* verde */
@@ -186,3 +186,10 @@ button:active {
 .result-value { color: #111; font-weight: 700; }
 
 .small-note { font-size: 0.9em; color: #666; margin-top: 6px; }
+
+/* Separador visual para la sección IMC */
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 20px 0;
+}

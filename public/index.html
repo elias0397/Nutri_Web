@@ -38,6 +38,7 @@
         <div class="input-group">
           <label for="talla">Talla: <span class="unit">CM</span></label>
           <input type="text" id="talla" required placeholder="Ej: 167,8" />
+          <div class="note info">La talla en metros para el IMC se calcula automáticamente.</div>
         </div>
 
         <div class="input-group">
@@ -58,6 +59,11 @@
         <div class="input-group">
           <label for="muneca">CIA de Muñeca: <span class="unit">CM</span></label>
           <input type="text" id="muneca" required placeholder="Ej: 16,2" />
+        </div>
+
+        <div class="input-group">
+          <label for="factorAF">Factor AF (Multiplicador TMB):</label>
+          <input type="text" id="factorAF" required placeholder="Ej: 1,3 (Sedentario), 1,7 (Moderado)" />
         </div>
       </div>
 
@@ -102,6 +108,38 @@
     <div id="resultados" class="result-card" style="display:none;">
       <h2 style="text-align:center; margin-bottom:20px; color:#333;">📊 Resultados del Análisis</h2>
 
+      <div class="section-header" style="margin-top:0;">
+        Requerimientos Calóricos (Kcal)
+      </div>
+      <div class="result-row">
+        <div class="result-label">Peso Ajustado (PA):</div>
+        <div class="result-value"><span id="pesoAjustadoRes"></span> KG</div>
+      </div>
+      <div class="result-row">
+        <div class="result-label">Fórmula Práctica (Base):</div>
+        <div class="result-value"><span id="formulaPracticaRes"></span> Kcal.</div>
+      </div>
+      <div class="result-row">
+        <div class="result-label">Harris Benedict (TMB):</div>
+        <div class="result-value"><span id="harrisBenedictRes"></span> Kcal.</div>
+      </div>
+      <div class="result-row">
+        <div class="result-label" style="font-weight: 800;">Valor Calórico Total (VCT):</div>
+        <div class="result-value" style="font-weight: 800;"><span id="vctRes"></span> Kcal.</div>
+      </div>
+      <hr>
+      <div class="section-header">
+        Cálculo Automático de IMC
+      </div>
+      <div class="result-row result-imc">
+        <div class="result-label">IMC Calculado:</div>
+        <div class="result-value"><span id="imcAutoRes"></span></div>
+      </div>
+      <div class="result-row result-imc">
+        <div class="result-label">Categoría IMC:</div>
+        <div class="result-value"><span id="imcAutoCat"></span> <span id="imcAutoChip" class=""></span></div>
+      </div>
+      <hr>
       <div class="result-row">
         <div class="result-label">Contextura corporal (talla/muneca):</div>
         <div class="result-value"><span id="ctxValor"></span></div>
@@ -123,18 +161,8 @@
       </div>
 
       <div class="result-row">
-        <div class="result-label">Interpretación PPI:</div> 
+        <div class="result-label">Interpretación PPI:</div>
         <div class="result-value"><span id="ppiChip" class=""></span></div>
-      </div>
-
-      <div class="result-row">
-        <div class="result-label">IMC:</div>
-        <div class="result-value"><span id="imcRes"></span></div>
-      </div>
-
-      <div class="result-row">
-        <div class="result-label">Categoría IMC:</div>
-        <div class="result-value"><span id="imcCat"></span></div>
       </div>
 
       <div class="result-row">
