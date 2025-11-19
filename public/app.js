@@ -1,96 +1,136 @@
-document.getElementById('fecha').valueAsDate = new Date();
+// app.js
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('formCalculos');
+  const resultadosDiv = document.getElementById('resultados');
 
-function realizarCalculos(e) {
-  e.preventDefault();
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    calcularNutricion();
+  });
+});
 
-  const datos = {
-    nombre: document.getElementById('nombre').value.trim(),
-    fecha: document.getElementById('fecha').value,
-    edad: parseInt(document.getElementById('edad').value, 10),
-    peso: parseFloat(document.getElementById('peso').value),
-    talla: parseFloat(document.getElementById('talla').value),
-    sexo: document.getElementById('sexo').value,
-    cintura: parseFloat(document.getElementById('cintura').value),
-    muneca: parseFloat(document.getElementById('muneca').value),
-    x_val: parseFloat(document.getElementById('x_val').value),
-    y_val: parseFloat(document.getElementById('y_val').value),
-    z_val: parseFloat(document.getElementById('z_val').value),
-    pesoIdealManual: parseFloat(document.getElementById('pesoIdealManual').value)
-  };
+/**
+ * Función que convierte el valor de un input de texto a número,
+ * manejando automáticamente la coma como separador decimal.
+ */
+function parseInput(id) {
+  const val = document.getElementById(id).value;
+  // Reemplaza coma por punto para cálculos y convierte a número
+  const num = parseFloat(val.replace(',', '.'));
+  return isNaN(num) ? 0 : num;
+}
 
-  const numerosRequeridos = ['peso','talla','cintura','muneca'];
-  for (const key of numerosRequeridos) {
-    if (isNaN(datos[key]) || datos[key] <= 0) {
-      alert('Por favor ingresa valores válidos.');
-      return;
-    }
-  }
+function calcularNutricion() {
+  // 1. Obtener valores
+  const peso = parseInput('peso');
+  const tallaCm = parseInput('talla');
+  const tallaM = tallaCm / 100;
+  const muneca = parseInput('muneca');
+  const cintura = parseInput('cintura');
+  const sexo = document.getElementById('sexo').value;
 
-  let pesoIdeal = NaN;
-  if (!isNaN(datos.x_val) && !isNaN(datos.y_val) && !isNaN(datos.z_val) && datos.z_val !== 0) {
-    pesoIdeal = (datos.x_val + datos.y_val) / datos.z_val;
-  }
-  if (!isNaN(datos.pesoIdealManual) && datos.pesoIdealManual > 0) {
-    pesoIdeal = datos.pesoIdealManual;
-  }
-  if (isNaN(pesoIdeal) || pesoIdeal <= 0) {
-    alert("No se pudo calcular el Peso Ideal.");
+  // Valores para peso ideal tabla (X, Y, Z)
+  const xVal = parseInput('x_val');
+  const yVal = parseInput('y_val');
+  const zVal = parseInput('z_val');
+  let pesoIdealManual = parseInput('pesoIdealManual');
+
+  if (!peso || !tallaCm || !sexo) {
+    alert("Por favor ingresa Peso, Talla y Sexo para continuar.");
     return;
   }
 
-  const valorCtx = datos.talla / datos.muneca;
+  // --- CÁLCULOS ---
 
-  let tipoCtx = "";
-  if (datos.sexo === "masculino") {
-    if (valorCtx > 10.4) tipoCtx = "Pequeña";
-    else if (valorCtx >= 9.6) tipoCtx = "Mediana";
-    else tipoCtx = "Grande";
-  } else if (datos.sexo === "femenino") {
-    if (valorCtx > 11) tipoCtx = "Pequeña";
-    else if (valorCtx >= 10.1) tipoCtx = "Mediana";
-    else tipoCtx = "Grande";
+  // A. Peso Ideal (Lógica mixta: Manual > Calculado > Fallback)
+  let pesoIdeal = 0;
+  if (pesoIdealManual > 0) {
+    pesoIdeal = pesoIdealManual;
+  } else if (zVal > 0) {
+    pesoIdeal = (xVal + yVal) / zVal;
+    // Rellenamos el input
+    document.getElementById('pesoIdealManual').value = pesoIdeal.toFixed(1).replace('.', ',');
+  } else {
+    // Si no hay datos, se usa una fórmula simple como Hamwi (22 * Talla^2)
+    pesoIdeal = 22 * (tallaM * tallaM); 
   }
 
-  const ppi = (datos.peso / pesoIdeal) * 100;
-  let interpretacion = "";
-  let ppiClass = "";
+  // B. Contextura (Talla cm / Muñeca cm)
+  let contexturaVal = 0;
+  let contexturaTipo = "No calculado";
+  if (muneca > 0) {
+    contexturaVal = tallaCm / muneca;
+    // Clasificación de contextura (ej. según Frisancho)
+    if (sexo === 'masculino') {
+      if (contexturaVal > 10.4) contexturaTipo = "Pequeña";
+      else if (contexturaVal >= 9.6) contexturaTipo = "Mediana";
+      else contexturaTipo = "Grande";
+    } else { // Femenino
+      if (contexturaVal > 11) contexturaTipo = "Pequeña";
+      else if (contexturaVal >= 10.1) contexturaTipo = "Mediana";
+      else contexturaTipo = "Grande";
+    }
+  }
 
-  if (ppi > 180) { interpretacion="Obesidad mórbida"; ppiClass="chip obesidad"; }
-  else if (ppi >=140){ interpretacion="Obesidad II"; ppiClass="chip obesidad"; }
-  else if (ppi >=120){ interpretacion="Obesidad I"; ppiClass="chip sobrepeso"; }
-  else if (ppi >=110){ interpretacion="Sobrepeso"; ppiClass="chip sobrepeso"; }
-  else if (ppi >=90){ interpretacion="Normal o Estándar"; ppiClass="chip normal"; }
-  else if (ppi >=85){ interpretacion="Desnutrición leve"; ppiClass="chip desnutricion"; }
-  else if (ppi >=75){ interpretacion="Desnutrición moderada"; ppiClass="chip desnutricion"; }
-  else            { interpretacion="Desnutrición severa"; ppiClass="chip desnutricion"; }
+  // C. IMC
+  const imc = peso / (tallaM * tallaM);
+  let imcCat = "";
+  if (imc < 18.5) imcCat = "Bajo peso";
+  else if (imc < 24.9) imcCat = "Normopeso";
+  else if (imc < 29.9) imcCat = "Sobrepeso";
+  else if (imc < 34.9) imcCat = "Obesidad I";
+  else if (imc < 39.9) imcCat = "Obesidad II";
+  else imcCat = "Obesidad III";
 
-  const talla_m = datos.talla / 100;
-  const imc = datos.peso / (talla_m ** 2);
+  // D. PPI (% Peso Ideal) = (Peso Actual / Peso Ideal) * 100
+  let ppi = 0;
+  let ppiInterp = "";
+  if (pesoIdeal > 0) {
+    ppi = (peso / pesoIdeal) * 100;
+    
+    // Clasificación de PPI
+    if (ppi < 90) ppiInterp = "Déficit";
+    else if (ppi <= 110) ppiInterp = "Normal";
+    else if (ppi <= 120) ppiInterp = "Sobrepeso";
+    else ppiInterp = "Obesidad";
+  }
 
-  let imcCategoria = "";
-  if (imc < 18.5) imcCategoria = "Bajo peso";
-  else if (imc < 25) imcCategoria = "Normal";
-  else if (imc < 30) imcCategoria = "Sobrepeso";
-  else imcCategoria = "Obesidad";
+  // E. Relación Cintura/Talla (ICT)
+  let ict = 0;
+  if (cintura > 0 && tallaCm > 0) {
+    ict = cintura / tallaCm;
+  }
 
-  const cinturaTalla = datos.cintura / datos.talla;
-  const riesgo = cinturaTalla > 0.5;
+  // --- MOSTRAR RESULTADOS ---
+  document.getElementById('resultados').style.display = 'block';
+  
+  // Contextura
+  document.getElementById('ctxValor').textContent = contexturaVal > 0 ? contexturaVal.toFixed(2).replace('.', ',') : "-";
+  document.getElementById('ctxTipo').textContent = contexturaTipo;
 
-  document.getElementById("ctxValor").textContent = valorCtx.toFixed(2);
-  document.getElementById("ctxTipo").textContent = tipoCtx;
-  document.getElementById("pesoIdealRes").textContent = pesoIdeal.toFixed(1);
-  document.getElementById("ppiRes").textContent = ppi.toFixed(1);
-  document.getElementById("interpretacionRes").textContent = interpretacion;
+  // Peso Ideal
+  document.getElementById('pesoIdealRes').textContent = pesoIdeal.toFixed(1).replace('.', ',');
 
-  const chip = document.getElementById("ppiChip");
-  chip.className = ppiClass;
-  chip.textContent = interpretacion;
+  // PPI
+  document.getElementById('ppiRes').textContent = ppi.toFixed(1).replace('.', ',') + "%";
+  document.getElementById('interpretacionRes').textContent = ppiInterp;
 
-  document.getElementById("imcRes").textContent = imc.toFixed(1);
-  document.getElementById("imcCat").textContent = imcCategoria;
-  document.getElementById("cinturaTalla").textContent = cinturaTalla.toFixed(2);
+  // IMC
+  document.getElementById('imcRes').textContent = imc.toFixed(1).replace('.', ',');
+  document.getElementById('imcCat').textContent = imcCat;
 
-  document.getElementById("riesgoCintura").style.display = riesgo ? "block" : "none";
+  // Cintura/Talla
+  document.getElementById('cinturaTalla').textContent = ict.toFixed(2).replace('.', ',');
+  
+  // Alerta de riesgo (ICT > 0.5 es riesgo elevado)
+  const alerta = document.getElementById('riesgoCintura');
+  if (ict > 0.5) {
+    alerta.textContent = "¡RIESGO ELEVADO! Riesgo cardiovascular por relación cintura/talla elevada (> 0.5)";
+    alerta.style.display = 'block';
+  } else {
+    alerta.style.display = 'none';
+  }
 
-  document.getElementById("resultados").style.display = "block";
+  // Scroll suave hacia resultados (útil en móviles)
+  document.getElementById('resultados').scrollIntoView({ behavior: 'smooth' });
 }
