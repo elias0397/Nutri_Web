@@ -43,13 +43,14 @@ function realizarCalculos(e) {
     y_val: getData('y_val'),
     z_val: getData('z_val'),
     pesoIdealManual: getData('pesoIdealManual'),
-    factorAF: getData('factorAF')
+    // Se elimina factorAF
   };
 
   // =====================================================
   // 2) Validaciones básicas
   // =====================================================
-  const numerosRequeridos = ['peso','talla','cintura','muneca', 'factorAF'];
+  // Se elimina factorAF de la lista de requeridos
+  const numerosRequeridos = ['peso','talla','cintura','muneca']; 
   for (const key of numerosRequeridos) {
     if (isNaN(datos[key]) || datos[key] <= 0) {
       alert(`Por favor ingresa un valor numérico válido para ${key}.`);
@@ -136,7 +137,7 @@ function realizarCalculos(e) {
       pesoParaPractica = pesoUtilizar; // pesoUtilizar es PA en este caso
       factorKcal = 25;
   } else if (ppi >= 90) {
-      // Normal (90% <= PPI < 110%) -> Peso X 30 kcal (Mantenimiento - Asunción)
+      // Normal (90% <= PPI < 110%) -> Peso X 30 kcal (Mantenimiento)
       pesoParaPractica = datos.peso;
       factorKcal = 30;
   } else if (ppi >= 85) {
@@ -166,8 +167,7 @@ function realizarCalculos(e) {
     tmb = 655.1 + (9.56 * pesoUtilizar) + (1.85 * datos.talla) - (4.68 * datos.edad);
   }
   
-  // Valor Calórico Total (VCT) = TMB * Factor AF
-  const vct = tmb * datos.factorAF;
+  // ELIMINAMOS EL CÁLCULO DE VCT = TMB * factorAF
 
 
   // =====================================================
@@ -202,7 +202,8 @@ function realizarCalculos(e) {
   document.getElementById('pesoAjustadoRes').textContent = pesoUtilizar.toFixed(1).replace('.', ',');
   document.getElementById('formulaPracticaRes').textContent = formulaPractica.toFixed(1).replace('.', ',');
   document.getElementById('harrisBenedictRes').textContent = tmb.toFixed(1).replace('.', ',');
-  document.getElementById('vctRes').textContent = vct.toFixed(1).replace('.', ',');
+  // ELIMINAMOS VCT
+  // document.getElementById('vctRes').textContent = vct.toFixed(1).replace('.', ','); 
 
   // Resultados IMC
   document.getElementById('imcAutoRes').textContent = imc.toFixed(2).replace('.', ',');
