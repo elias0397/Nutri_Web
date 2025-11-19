@@ -36,7 +36,6 @@ function realizarCalculos(e) {
     edad: parseInt(document.getElementById('edad').value, 10),
     peso: getData('peso'),
     talla: getData('talla'), // en CM
-    // tallaIMC: ya no se obtiene, se calcula
     sexo: document.getElementById('sexo').value,
     cintura: getData('cintura'),
     muneca: getData('muneca'),
@@ -100,7 +99,7 @@ function realizarCalculos(e) {
   // =====================================================
   // 4) Cálculo de IMC
   // =====================================================
-  // Calcular Talla en metros a partir de Talla en CM (NUEVA LÓGICA)
+  // Calcular Talla en metros a partir de Talla en CM
   const talla_metros = datos.talla / 100; 
   const imc = datos.peso / (talla_metros * talla_metros);
   let imcCat = '';
@@ -170,7 +169,7 @@ function realizarCalculos(e) {
 
 
   // =====================================================
-  // 7) Mostrar todos los resultados
+  // 7) Mostrar todos los resultados y Scroll (MEJORA MÓVIL)
   // =====================================================
   
   // Resultados Energía
@@ -207,9 +206,12 @@ function realizarCalculos(e) {
     aviso.style.display = 'none';
   }
 
-  // Mostrar la tarjeta de resultados y hacer scroll suave (solución móvil)
-  setTimeout(() => {
-    document.getElementById('resultados').style.display = 'block';
-    document.getElementById('resultados').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 50);
+  // Mostrar la tarjeta de resultados y asegurar el scroll
+  const resultadosDiv = document.getElementById('resultados');
+  resultadosDiv.style.display = 'block';
+
+  // Usar un pequeño retraso para asegurar que el elemento esté visible antes de hacer scroll
+  window.requestAnimationFrame(() => {
+    resultadosDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
 }
