@@ -277,13 +277,6 @@ export default {
         </div>
       </div>
 
-        <div class="input-group full-width">
-          <label for="pesoIdealManual">Peso ideal calculado (automático) — o ingresa manual si prefieres:</label>
-          <input type="number" id="pesoIdealManual" step="0.1" placeholder="Se calcula desde (x+y)/z o puedes escribirlo manualmente" />
-          <div class="small-note">Si completas X,Y,Z el sistema calculará automáticamente el Peso ideal = (X + Y) / Z. Si quieres, puedes sobreescribir manualmente aquí.</div>
-        </div>
-      </div>
-
       <div class="section-header">Dx. Médico:</div>
       <div class="input-group">
         <label for="dxMedico">Diagnóstico Médico:</label>
@@ -497,7 +490,8 @@ export default {
     }
   </script>
 </body>
-</html>`;
+</html>
+`;
 
     return new Response(html, {
       headers: {
