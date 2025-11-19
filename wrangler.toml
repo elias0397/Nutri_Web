@@ -2,3 +2,6 @@ name = "nutri-web"
 compatibility_date = "2025-11-19"
 main = "src/index.js"
 
+[build]
+command = ""
+
