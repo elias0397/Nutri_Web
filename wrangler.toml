@@ -1,8 +1,4 @@
 name = "nutri-web"
 compatibility_date = "2025-11-19"
-main = "index.html"
-
-# Configuración para servir archivos estáticos
-[assets]
-directory = "."
+main = "src/index.js"
 
