@@ -1,7 +1,4 @@
-// Worker que sirve el HTML de la calculadora de dieta
-export default {
-  async fetch(request, env, ctx) {
-    const html = `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -377,13 +374,4 @@ export default {
     }
   </script>
 </body>
-</html>`;
-
-    return new Response(html, {
-      headers: {
-        'Content-Type': 'text/html; charset=UTF-8',
-      },
-    });
-  },
-};
-
+</html>
