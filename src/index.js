@@ -7,7 +7,7 @@ export default {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NutriWeb - Sistema de Gestión Nutricional</title>
+  <title>NutriWeb - Sistema de Cálculo Nutricional</title>
   <style>
     * {
       margin: 0;
@@ -160,14 +160,52 @@ export default {
         font-size: 1.5em;
       }
     }
+
+    /* colores para interpretaciones */
+    .chip {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 700;
+      color: white;
+      margin-left: 8px;
+      font-size: 0.95em;
+    }
+    .chip.normal { background: #2e7d32; }        /* verde */
+    .chip.sobrepeso { background: #ff9800; }     /* naranja */
+    .chip.obesidad { background: #d32f2f; }      /* rojo */
+    .chip.desnutricion { background: #6a1b9a; }  /* morado */
+    .chip.riesgo { background: #c62828; }        /* rojo oscuro */
+
+    /* tarjeta de resultados */
+    .result-card {
+      margin-top: 40px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 15px;
+      border: 2px solid #e0e0e0;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin: 8px 0;
+    }
+
+    .result-label { color: #333; font-weight: 600; }
+    .result-value { color: #111; font-weight: 700; }
+
+    .small-note { font-size: 0.9em; color: #666; margin-top: 6px; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🍎 NutriWeb - Sistema de Gestión Nutricional</h1>
+    <h1>🍎 NutriWeb - Sistema de Cálculo Nutricional</h1>
 
-    <form id="formPaciente" onsubmit="guardarDatos(event)">
-      <div class="section-header">Datos personales del paciente:</div>
+    <form id="formCalculos" onsubmit="realizarCalculos(event)">
+      <div class="section-header">Datos del paciente para cálculos:</div>
       
       <div class="form-grid">
         <div class="input-group full-width">
@@ -216,10 +254,33 @@ export default {
         </div>
       </div>
 
+      <!-- Nuevo apartado: cálculo del peso ideal según (x + y) / z -->
+      <div class="section-header">Peso Ideal (según tabla)</div>
+      <div class="form-grid">
+        <div class="input-group">
+          <label for="x_val">Valor X (tabla):</label>
+          <input type="number" id="x_val" step="0.1" placeholder="Ej: 71.2" />
+        </div>
+        <div class="input-group">
+          <label for="y_val">Valor Y (tabla):</label>
+          <input type="number" id="y_val" step="0.1" placeholder="Ej: 80" />
+        </div>
+        <div class="input-group">
+          <label for="z_val">Divisor Z (tabla):</label>
+          <input type="number" id="z_val" step="0.1" placeholder="Ej: 2" />
+        </div>
+
+        <div class="input-group full-width">
+          <label for="pesoIdealManual">Peso ideal calculado (automático) — o ingresa manual si prefieres:</label>
+          <input type="number" id="pesoIdealManual" step="0.1" placeholder="Se calcula desde (x+y)/z o puedes escribirlo manualmente" />
+          <div class="small-note">Si completas X,Y,Z el sistema calculará automáticamente el Peso ideal = (X + Y) / Z. Si quieres, puedes sobreescribir manualmente aquí.</div>
+        </div>
+      </div>
+
       <div class="section-header">Dx. Médico:</div>
       <div class="input-group">
         <label for="dxMedico">Diagnóstico Médico:</label>
-        <textarea id="dxMedico" placeholder="Ingrese el diagnóstico médico del paciente..."></textarea>
+        <textarea id="dxMedico" placeholder="Ingrese diagnóstico médico..."></textarea>
       </div>
 
       <div class="section-header">Dx. Nutricional:</div>
@@ -229,42 +290,204 @@ export default {
         <div class="note info">Siempre el peor rango.</div>
       </div>
 
-      <button type="submit">Guardar Datos del Paciente</button>
+      <button type="submit">Realizar cálculos</button>
     </form>
+
+    <!-- Resultados -->
+    <div id="resultados" class="result-card" style="display:none;">
+      <h2 style="text-align:center; margin-bottom:20px; color:#333;">📊 Resultados del Análisis</h2>
+
+      <div class="result-row">
+        <div class="result-label">Contextura corporal (talla/muneca):</div>
+        <div class="result-value"><span id="ctxValor"></span></div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">Tipo de contextura:</div>
+        <div class="result-value"><span id="ctxTipo"></span></div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">Peso ideal (kg):</div>
+        <div class="result-value"><span id="pesoIdealRes"></span></div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">% Peso Ideal (PPI):</div>
+        <div class="result-value"><span id="ppiRes"></span> <span id="ppiChip" class=""></span></div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">Interpretación PPI:</div>
+        <div class="result-value"><span id="interpretacionRes"></span></div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">IMC:</div>
+        <div class="result-value"><span id="imcRes"></span></div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">Categoría IMC:</div>
+        <div class="result-value"><span id="imcCat"></span></div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">Relación cintura / talla:</div>
+        <div class="result-value"><span id="cinturaTalla"></span></div>
+      </div>
+
+      <div id="riesgoCintura" class="small-note" style="display:none; color:#c62828; font-weight:700; margin-top:12px;">
+        Riesgo cardiovascular por relación cintura/talla elevada (> 0.5)
+      </div>
+
+    </div>
   </div>
 
   <script>
-    function guardarDatos(e) {
+    // Guardamos la fecha actual en el input
+    document.getElementById('fecha').valueAsDate = new Date();
+
+    // Función principal: toma todos los valores, valida, calcula y muestra resultados
+    function realizarCalculos(e) {
       e.preventDefault();
 
+      // =====================================================
+      // 1) Guardar inputs en un objeto para evitar lecturas directas dispersas
+      // =====================================================
       const datos = {
-        nombre: document.getElementById('nombre').value,
+        nombre: document.getElementById('nombre').value.trim(),
         fecha: document.getElementById('fecha').value,
-        edad: parseInt(document.getElementById('edad').value),
+        edad: parseInt(document.getElementById('edad').value, 10),
         peso: parseFloat(document.getElementById('peso').value),
         talla: parseFloat(document.getElementById('talla').value),
         sexo: document.getElementById('sexo').value,
         cintura: parseFloat(document.getElementById('cintura').value),
         muneca: parseFloat(document.getElementById('muneca').value),
-        dxMedico: document.getElementById('dxMedico').value,
-        dxNutricional: document.getElementById('dxNutricional').value
+        // valores para la fórmula (x + y) / z
+        x_val: parseFloat(document.getElementById('x_val').value),
+        y_val: parseFloat(document.getElementById('y_val').value),
+        z_val: parseFloat(document.getElementById('z_val').value),
+        // campo que puede ser calculado automáticamente o ingresado manualmente
+        pesoIdealManual: parseFloat(document.getElementById('pesoIdealManual').value),
+        dxMedico: document.getElementById('dxMedico').value.trim(),
+        dxNutricional: document.getElementById('dxNutricional').value.trim()
       };
 
-      // Validar riesgo cardiovascular
-      if (datos.cintura > 100) {
-        alert('⚠️ ADVERTENCIA: La circunferencia de cintura es mayor a 100 CM. Indica riesgo cardiovascular.');
+      // =====================================================
+      // 2) Validaciones básicas de campos numéricos necesarios
+      // =====================================================
+      const numerosRequeridos = ['peso','talla','cintura','muneca'];
+      for (const key of numerosRequeridos) {
+        if (isNaN(datos[key]) || datos[key] <= 0) {
+          alert('Por favor ingresa valores numéricos válidos para peso, talla, cintura y muñeca.');
+          return;
+        }
       }
 
-      console.log('Datos del paciente:', datos);
-      
-      // Aquí puedes agregar la lógica para guardar los datos
-      // Por ejemplo: enviar a un servidor, guardar en localStorage, etc.
-      
-      alert('✅ Datos del paciente guardados correctamente');
-    }
+      // =====================================================
+      // 3) Calcular Peso Ideal según (x + y) / z si están las 3 piezas
+      //    Si el usuario escribió manualmente en pesoIdealManual, se respeta ese valor.
+      // =====================================================
+      let pesoIdeal = NaN;
+      if (!isNaN(datos.x_val) && !isNaN(datos.y_val) && !isNaN(datos.z_val) && datos.z_val !== 0) {
+        pesoIdeal = (datos.x_val + datos.y_val) / datos.z_val;
+      }
 
-    // Establecer fecha actual por defecto
-    document.getElementById('fecha').valueAsDate = new Date();
+      // Si el usuario ingresó manualmente un valor en el campo, lo usamos (sobrescribe cálculo)
+      if (!isNaN(datos.pesoIdealManual) && datos.pesoIdealManual > 0) {
+        pesoIdeal = datos.pesoIdealManual;
+      }
+
+      // Si no se pudo obtener peso ideal -> aviso y no continuar
+      if (isNaN(pesoIdeal) || pesoIdeal <= 0) {
+        alert('No se pudo calcular el Peso Ideal. Completa X, Y, Z correctamente o ingresa manualmente el Peso Ideal.');
+        return;
+      }
+
+      // =====================================================
+      // 4) Contextura corporal (talla / muñeca)
+      // =====================================================
+      const valorCtx = datos.talla / datos.muneca;
+      let tipoCtx = '';
+      if (datos.sexo === 'masculino') {
+        if (valorCtx > 10.4) tipoCtx = 'Pequeña';
+        else if (valorCtx >= 9.6 && valorCtx <= 10.4) tipoCtx = 'Mediana';
+        else tipoCtx = 'Grande';
+      } else if (datos.sexo === 'femenino') {
+        if (valorCtx > 11) tipoCtx = 'Pequeña';
+        else if (valorCtx >= 10.1 && valorCtx <= 11) tipoCtx = 'Mediana';
+        else tipoCtx = 'Grande';
+      } else {
+        tipoCtx = 'No definido (sexo no seleccionado)';
+      }
+
+      // =====================================================
+      // 5) % Peso Ideal (PPI) y su interpretación
+      // =====================================================
+      const ppi = (datos.peso / pesoIdeal) * 100;
+      let interpretacion = '';
+      let ppiClass = '';
+
+      if (ppi > 180)      { interpretacion = 'Obesidad mórbida'; ppiClass = 'chip obesidad'; }
+      else if (ppi >= 140){ interpretacion = 'Obesidad II'; ppiClass = 'chip obesidad'; }
+      else if (ppi >= 120){ interpretacion = 'Obesidad I'; ppiClass = 'chip sobrepeso'; }
+      else if (ppi >= 110){ interpretacion = 'Sobrepeso'; ppiClass = 'chip sobrepeso'; }
+      else if (ppi >= 90) { interpretacion = 'Normal o Estándar'; ppiClass = 'chip normal'; }
+      else if (ppi >= 85) { interpretacion = 'Desnutrición leve'; ppiClass = 'chip desnutricion'; }
+      else if (ppi >= 75) { interpretacion = 'Desnutrición moderada'; ppiClass = 'chip desnutricion'; }
+      else                { interpretacion = 'Desnutrición severa'; ppiClass = 'chip desnutricion'; }
+
+      // =====================================================
+      // 6) IMC (Índice de Masa Corporal)
+      //    IMC = peso(kg) / (talla(m))^2
+      // =====================================================
+      const talla_m = datos.talla / 100; // convertir cm a metros
+      const imc = datos.peso / (talla_m * talla_m);
+      let imcCategoria = '';
+      if (imc < 18.5) imcCategoria = 'Bajo peso';
+      else if (imc < 25) imcCategoria = 'Normal';
+      else if (imc < 30) imcCategoria = 'Sobrepeso';
+      else imcCategoria = 'Obesidad';
+
+      // =====================================================
+      // 7) Relación cintura / talla
+      //    Indicador simple de riesgo: > 0.5 es riesgo aumentado
+      // =====================================================
+      const cinturaTallaRatio = datos.cintura / datos.talla;
+      const riesgoCintura = cinturaTallaRatio > 0.5;
+
+      // =====================================================
+      // 8) Mostrar todos los resultados en la tarjeta (con colores)
+      // =====================================================
+      document.getElementById('ctxValor').textContent = valorCtx.toFixed(2);
+      document.getElementById('ctxTipo').textContent = tipoCtx;
+      document.getElementById('pesoIdealRes').textContent = pesoIdeal.toFixed(1);
+      document.getElementById('ppiRes').textContent = ppi.toFixed(1);
+      document.getElementById('interpretacionRes').textContent = interpretacion;
+      // chip de color para PPI
+      const chip = document.getElementById('ppiChip');
+      chip.className = ppiClass;
+      chip.textContent = interpretacion;
+
+      document.getElementById('imcRes').textContent = imc.toFixed(1);
+      document.getElementById('imcCat').textContent = imcCategoria;
+      document.getElementById('cinturaTalla').textContent = cinturaTallaRatio.toFixed(2);
+
+      // mostrar/ocultar aviso de riesgo por cintura
+      const aviso = document.getElementById('riesgoCintura');
+      if (riesgoCintura) {
+        aviso.style.display = 'block';
+      } else {
+        aviso.style.display = 'none';
+      }
+
+      // mostrar la tarjeta de resultados
+      document.getElementById('resultados').style.display = 'block';
+
+      // mensaje final (opcional)
+      // alert('✅ Cálculos realizados correctamente');
+    }
   </script>
 </body>
 </html>`;
