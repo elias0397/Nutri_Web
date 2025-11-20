@@ -119,7 +119,7 @@ function realizarCalculos(e) {
   // =====================================================
   
   let pesoUtilizar;
-  let pesoBaseTexto; // <-- Variable para reportar el peso usado
+  let pesoBaseTexto; // Variable para reportar el peso usado
   
   // Determinar Peso a utilizar (Peso Actual o Peso Ajustado - PA)
   // CONDICIÓN: Si el paciente tiene sobrepeso o es obeso (IMC >= 25 O PPI >= 110%), se usa Peso Ajustado.
@@ -207,7 +207,7 @@ function realizarCalculos(e) {
   // =====================================================
   
   // Resultados Energía
-  document.getElementById('pesoBaseUsado').textContent = pesoBaseTexto; // <-- Muestra si se usó PA o P
+  document.getElementById('pesoBaseUsado').textContent = pesoBaseTexto; // Muestra si se usó PA o P
   document.getElementById('pesoAjustadoRes').textContent = pesoUtilizar.toFixed(1).replace('.', ',');
   document.getElementById('formulaPracticaRes').textContent = formulaPractica.toFixed(1).replace('.', ',');
   document.getElementById('harrisBenedictRes').textContent = tmb.toFixed(1).replace('.', ',');
