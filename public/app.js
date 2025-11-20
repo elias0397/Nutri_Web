@@ -119,15 +119,19 @@ function realizarCalculos(e) {
   // =====================================================
   
   let pesoUtilizar;
+  let pesoBaseTexto; // <-- Variable para reportar el peso usado
+  
   // Determinar Peso a utilizar (Peso Actual o Peso Ajustado - PA)
   // CONDICIÓN: Si el paciente tiene sobrepeso o es obeso (IMC >= 25 O PPI >= 110%), se usa Peso Ajustado.
   if (imc >= 25 || ppi >= 110) {
     // FÓRMULA PESO AJUSTADO: (Peso actual - peso ideal)x 0,25 + Peso ideal
     const PA = (datos.peso - pesoIdeal) * 0.25 + pesoIdeal;
     pesoUtilizar = PA;
+    pesoBaseTexto = 'Peso Ajustado (PA)'; // Se usó Peso Ajustado
   } else {
     // Si no cumple la condición, se usa el Peso Actual.
     pesoUtilizar = datos.peso;
+    pesoBaseTexto = 'Peso Actual'; // Se usó Peso Actual
   }
   
   // 5.1) Cálculo de Fórmula Práctica (Depende del PPI)
@@ -139,19 +143,19 @@ function realizarCalculos(e) {
       pesoParaPractica = pesoUtilizar; // pesoUtilizar es PA en este caso
       factorKcal = 25;
   } else if (ppi >= 90) {
-      // Normal (90% <= PPI < 110%) -> Peso X 30 kcal (Mantenimiento)
+      // Normal (90% <= PPI < 110%) -> Peso Actual X 30 kcal (Mantenimiento)
       pesoParaPractica = datos.peso;
       factorKcal = 30;
   } else if (ppi >= 85) {
-      // Desnutrición Leve (85% <= PPI < 90%) -> Peso X 30 kcal
+      // Desnutrición Leve (85% <= PPI < 90%) -> Peso Actual X 30 kcal
       pesoParaPractica = datos.peso;
       factorKcal = 30;
   } else if (ppi >= 75) {
-      // Desnutrición Moderada (75% <= PPI < 85%) -> Peso X 40 kcal
+      // Desnutrición Moderada (75% <= PPI < 85%) -> Peso Actual X 40 kcal
       pesoParaPractica = datos.peso;
       factorKcal = 40;
   } else { // ppi < 75
-      // Desnutrición Severa (PPI < 75%) -> Peso X 45 kcal
+      // Desnutrición Severa (PPI < 75%) -> Peso Actual X 45 kcal
       pesoParaPractica = datos.peso;
       factorKcal = 45;
   }
@@ -199,34 +203,34 @@ function realizarCalculos(e) {
 
 
   // =====================================================
-  // 7) Mostrar todos los resultados y Scroll (REPARADO)
+  // 7) Mostrar todos los resultados y Scroll 
   // =====================================================
   
-  // Resultados Energía (REPARADOS)
+  // Resultados Energía
+  document.getElementById('pesoBaseUsado').textContent = pesoBaseTexto; // <-- Muestra si se usó PA o P
   document.getElementById('pesoAjustadoRes').textContent = pesoUtilizar.toFixed(1).replace('.', ',');
   document.getElementById('formulaPracticaRes').textContent = formulaPractica.toFixed(1).replace('.', ',');
   document.getElementById('harrisBenedictRes').textContent = tmb.toFixed(1).replace('.', ',');
   document.getElementById('vctRes').textContent = vct.toFixed(1).replace('.', ','); 
 
-  // Resultados IMC (REPARADOS)
+  // Resultados IMC
   document.getElementById('imcAutoRes').textContent = imc.toFixed(2).replace('.', ',');
-  // Eliminamos imcAutoCat en el HTML, solo actualizamos el chip
   const imcChip = document.getElementById('imcAutoChip');
   imcChip.className = imcClass;
   imcChip.textContent = imcCat;
 
-  // Resultados Contextura/Peso Ideal (REPARADOS)
+  // Resultados Contextura/Peso Ideal
   document.getElementById('ctxValor').textContent = valorCtx.toFixed(2).replace('.', ',');
   document.getElementById('ctxTipo').textContent = tipoCtx;
   document.getElementById('pesoIdealRes').textContent = pesoIdeal.toFixed(1).replace('.', ',');
   document.getElementById('ppiRes').textContent = ppi.toFixed(1).replace('.', ',') + '%';
   
-  // Resultados PPI (REPARADOS)
+  // Resultados PPI
   const ppiChip = document.getElementById('ppiChip');
   ppiChip.className = ppiClass;
   ppiChip.textContent = interpretacion; 
 
-  // Resultados Cintura/Talla (REPARADOS)
+  // Resultados Cintura/Talla
   document.getElementById('cinturaTalla').textContent = cinturaTallaRatio.toFixed(2).replace('.', ',');
 
   const aviso = document.getElementById('riesgoCintura');
