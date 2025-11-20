@@ -124,14 +124,15 @@ function realizarCalculos(e) {
   // Determinar Peso a utilizar (Peso Actual o Peso Ajustado - PA)
   // CONDICIÓN: Si el paciente tiene sobrepeso o es obeso (IMC >= 25 O PPI >= 110%), se usa Peso Ajustado.
   if (imc >= 25 || ppi >= 110) {
+    // Se cumple la condición de sobrepeso/obesidad
     // FÓRMULA PESO AJUSTADO: (Peso actual - peso ideal)x 0,25 + Peso ideal
     const PA = (datos.peso - pesoIdeal) * 0.25 + pesoIdeal;
     pesoUtilizar = PA;
-    pesoBaseTexto = 'Peso Ajustado (PA)'; // Se usó Peso Ajustado
+    pesoBaseTexto = 'Peso Ajustado (PA)'; // ESTO DEBE SALIR SOLO AQUÍ
   } else {
-    // Si no cumple la condición, se usa el Peso Actual.
+    // NO se cumple la condición (Peso Normal o Desnutrición)
     pesoUtilizar = datos.peso;
-    pesoBaseTexto = 'Peso Actual'; // Se usó Peso Actual
+    pesoBaseTexto = 'Peso Actual'; // ESTO DEBE SALIR AQUÍ
   }
   
   // 5.1) Cálculo de Fórmula Práctica (Depende del PPI)
