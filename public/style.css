@@ -529,3 +529,101 @@ hr {
     font-weight: 700;
   }
 }
+
+/* PDF Generation Styles */
+body.generating-pdf .btn-export,
+body.generating-pdf #btnAddRow,
+body.generating-pdf #exportSection {
+  display: none !important;
+}
+
+body.generating-pdf .container {
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+}
+
+/* ==========================================================================
+   10. Dedicated PDF Report Styles
+   ========================================================================== */
+.pdf-report-container {
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  padding: 20px;
+  background: white;
+  color: #333;
+}
+
+.pdf-header {
+  text-align: center;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #4caf50;
+  padding-bottom: 10px;
+}
+
+.pdf-header h1 {
+  margin: 0;
+  color: #2e7d32;
+  font-size: 24px;
+}
+
+.pdf-section {
+  margin-bottom: 25px;
+}
+
+.pdf-section h3 {
+  background-color: #f0f0f0;
+  padding: 8px;
+  border-left: 5px solid #4caf50;
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #333;
+}
+
+.pdf-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.pdf-row {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  padding: 5px 0;
+}
+
+.pdf-label {
+  font-weight: bold;
+  color: #555;
+}
+
+.pdf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.pdf-table th,
+.pdf-table td {
+  border: 1px solid #ddd;
+  padding: 6px;
+  text-align: center;
+}
+
+.pdf-table th {
+  background-color: #f9f9f9;
+  font-weight: bold;
+}
+
+.pdf-summary {
+  margin-top: 20px;
+  background-color: #e8f5e9;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+/* Hide the report container from the web view */
+#pdfReportHidden {
+  display: none;
+}

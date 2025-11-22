@@ -507,32 +507,192 @@ function exportarPDF() {
   const nombrePaciente = document.getElementById('nombre').value || 'Paciente';
   const filename = `NutriWeb_Reporte_${nombrePaciente.replace(/\s+/g, '_')}.pdf`;
 
-  const element = document.querySelector('.container');
+  // Generar el contenido HTML específico para el reporte
+  const reportContent = generarContenidoReporte();
+
+  // Crear un contenedor temporal para el PDF
+  const tempContainer = document.createElement('div');
+  tempContainer.innerHTML = reportContent;
+  document.body.appendChild(tempContainer);
+
   const opt = {
-    margin: [0.3, 0.3], // Top/Bottom, Left/Right margins in inches
+    margin: [0.3, 0.3],
     filename: filename,
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, logging: false },
+    html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
     pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
   };
 
-  // Ocultar botones antes de generar
-  const btnRow = document.getElementById('exportSection');
-  const btnAdd = document.getElementById('btnAddRow');
-
-  // Add a class to body for specific PDF styles if needed
-  document.body.classList.add('generating-pdf');
-
-  btnRow.style.display = 'none';
-  if (btnAdd) btnAdd.style.display = 'none';
-
-  html2pdf().set(opt).from(element).save().then(() => {
-    // Restaurar botones y estado
-    document.body.classList.remove('generating-pdf');
-    btnRow.style.display = 'block';
-    if (btnAdd) btnAdd.style.display = 'inline-block';
+  // Usar el contenedor temporal como fuente
+  html2pdf().set(opt).from(tempContainer).save().then(() => {
+    // Limpiar el DOM
+    document.body.removeChild(tempContainer);
+  }).catch(err => {
+    console.error("PDF Generation Error:", err);
+    if (document.body.contains(tempContainer)) {
+      document.body.removeChild(tempContainer);
+    }
   });
+}
+
+function generarContenidoReporte() {
+  const nombre = document.getElementById('nombre').value;
+  const fecha = document.getElementById('fecha').value;
+  const edad = document.getElementById('edad').value;
+  const peso = document.getElementById('peso').value;
+  const talla = document.getElementById('talla').value;
+  const imc = document.getElementById('imcAutoRes').textContent;
+  const vct = document.getElementById('vctRes').textContent;
+
+  // Construir filas de la fórmula desarrollada
+  let fdRowsHTML = '';
+  const fdRows = document.querySelectorAll('#fdTableBody tr');
+  fdRows.forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    // Solo agregar filas que tengan algún dato (ej. alimento o cantidad)
+    if (inputs[0].value || inputs[2].value) {
+      fdRowsHTML += '<tr>';
+      // Alimento (0), Medida (1), Cantidad (2)
+      fdRowsHTML += `<td style="text-align: left;">${inputs[0].value}</td>`;
+      fdRowsHTML += `<td>${inputs[1].value}</td>`;
+      fdRowsHTML += `<td>${inputs[2].value}</td>`;
+      // Nutrientes (3-16)
+      for (let i = 3; i <= 16; i++) {
+        fdRowsHTML += `<td>${inputs[i].value}</td>`;
+      }
+      fdRowsHTML += '</tr>';
+    }
+  });
+
+  // Totales
+  const totalsHTML = `
+    <tr style="background-color: #f0f0f0; font-weight: bold;">
+      <td colspan="3" style="text-align: right;">TOTALES</td>
+      <td>${document.getElementById('sumHc').textContent}</td>
+      <td>${document.getElementById('sumProt').textContent}</td>
+      <td>${document.getElementById('sumGrasa').textContent}</td>
+      <td>${document.getElementById('sumPavb').textContent}</td>
+      <td>${document.getElementById('sumNa').textContent}</td>
+      <td>${document.getElementById('sumK').textContent}</td>
+      <td>${document.getElementById('sumP').textContent}</td>
+      <td>${document.getElementById('sumCa').textContent}</td>
+      <td>${document.getElementById('sumCol').textContent}</td>
+      <td>${document.getElementById('sumPur').textContent}</td>
+      <td>${document.getElementById('sumAgua').textContent}</td>
+      <td>${document.getElementById('sumGs').textContent}</td>
+      <td>${document.getElementById('sumChs').textContent}</td>
+      <td>${document.getElementById('sumFibra').textContent}</td>
+    </tr>
+  `;
+
+  return `
+    <div class="pdf-report-container">
+      <div class="pdf-header">
+        <h1>Reporte Nutricional</h1>
+        <p>${fecha} - ${nombre}</p>
+      </div>
+
+      <div class="pdf-section">
+        <h3>Datos del Paciente</h3>
+        <div class="pdf-grid">
+          <div class="pdf-row"><span class="pdf-label">Nombre:</span> <span>${nombre}</span></div>
+          <div class="pdf-row"><span class="pdf-label">Edad:</span> <span>${edad} años</span></div>
+          <div class="pdf-row"><span class="pdf-label">Peso:</span> <span>${peso} kg</span></div>
+          <div class="pdf-row"><span class="pdf-label">Talla:</span> <span>${talla} cm</span></div>
+          <div class="pdf-row"><span class="pdf-label">IMC:</span> <span>${imc}</span></div>
+          <div class="pdf-row"><span class="pdf-label">VCT Calculado:</span> <span>${vct} Kcal</span></div>
+        </div>
+      </div>
+
+      <div class="pdf-section">
+        <h3>Distribución de Macronutrientes</h3>
+        <table class="pdf-table">
+          <thead>
+            <tr>
+              <th>Macro</th>
+              <th>%</th>
+              <th>Kcal</th>
+              <th>Gramos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Carbohidratos</td>
+              <td>${document.getElementById('distHcPorc').value}%</td>
+              <td>${document.getElementById('distHcKcal').textContent}</td>
+              <td>${document.getElementById('distHcGramos').textContent}</td>
+            </tr>
+            <tr>
+              <td>Proteínas</td>
+              <td>${document.getElementById('distPrPorc').value}%</td>
+              <td>${document.getElementById('distPrKcal').textContent}</td>
+              <td>${document.getElementById('distPrGramos').textContent}</td>
+            </tr>
+            <tr>
+              <td>Grasas</td>
+              <td>${document.getElementById('distGrPorc').value}%</td>
+              <td>${document.getElementById('distGrKcal').textContent}</td>
+              <td>${document.getElementById('distGrGramos').textContent}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pdf-section">
+        <h3>Fórmula Desarrollada</h3>
+        <div style="overflow-x: visible;">
+          <table class="pdf-table" style="font-size: 10px;">
+            <thead>
+              <tr style="background-color: #e0e0e0;">
+                <th colspan="3" style="text-align: right;">METAS:</th>
+                <th>${document.getElementById('targetHc').textContent}</th>
+                <th>${document.getElementById('targetProt').textContent}</th>
+                <th>${document.getElementById('targetGrasa').textContent}</th>
+                <th colspan="8"></th>
+                <th>${document.getElementById('targetGs').textContent}</th>
+                <th>${document.getElementById('targetChs').textContent}</th>
+                <th></th>
+              </tr>
+              <tr>
+                <th>Alimento</th>
+                <th>Medida</th>
+                <th>Cant</th>
+                <th>HC</th>
+                <th>Prot</th>
+                <th>Gr</th>
+                <th>PAVB</th>
+                <th>Na</th>
+                <th>K</th>
+                <th>P</th>
+                <th>Ca</th>
+                <th>Col</th>
+                <th>Pur</th>
+                <th>Agua</th>
+                <th>GS</th>
+                <th>CHS</th>
+                <th>Fib</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${fdRowsHTML}
+              ${totalsHTML}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="pdf-section pdf-summary">
+        <h3>Aporte Real de la Dieta</h3>
+        <div class="pdf-grid">
+          <div class="pdf-row"><span class="pdf-label">VCT Real:</span> <span>${document.getElementById('fdVctReal').textContent} Kcal</span></div>
+          <div class="pdf-row"><span class="pdf-label">PAVB:</span> <span>${document.getElementById('fdPavbPorc').textContent} %</span></div>
+          <div class="pdf-row"><span class="pdf-label">Grasas Saturadas:</span> <span>${document.getElementById('fdGsPorc').textContent} %</span></div>
+          <div class="pdf-row"><span class="pdf-label">Carbohidratos Simples:</span> <span>${document.getElementById('fdChsPorc').textContent} %</span></div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 // ==========================================================================
