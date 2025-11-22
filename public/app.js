@@ -399,6 +399,9 @@ document.getElementById('btnExportExcel').addEventListener('click', exportarExce
 document.getElementById('btnExportPDF').addEventListener('click', exportarPDF);
 
 function exportarExcel() {
+  const nombrePaciente = document.getElementById('nombre').value || 'Paciente';
+  const filename = `NutriWeb_Reporte_${nombrePaciente.replace(/\s+/g, '_')}.xlsx`;
+
   // 1. Recopilar Datos Generales
   const datosGenerales = [
     ['DATOS DEL PACIENTE'],
@@ -426,6 +429,7 @@ function exportarExcel() {
   // 2. Recopilar Datos de Distribución
   const distData = [
     ['DISTRIBUCIÓN DE MACRONUTRIENTES'],
+    ['Paciente', nombrePaciente],
     ['VCT Utilizado', document.getElementById('distVct').value],
     [''],
     ['Macronutriente', 'KCAL', '%', 'GRAMOS', 'Notas'],
@@ -437,6 +441,9 @@ function exportarExcel() {
 
   // 3. Recopilar Datos de Fórmula Desarrollada
   const fdRows = [['FÓRMULA DESARROLLADA']];
+  fdRows.push(['Paciente', nombrePaciente]);
+  fdRows.push(['']);
+
   // Headers
   const headers = [
     'Alimento', 'Medida Casera', 'Cantidad', 'HC', 'Prot', 'Grasa', 'PAVB',
@@ -493,14 +500,17 @@ function exportarExcel() {
   XLSX.utils.book_append_sheet(wb, ws3, "Fórmula Desarrollada");
 
   // Descargar
-  XLSX.writeFile(wb, "NutriWeb_Reporte.xlsx");
+  XLSX.writeFile(wb, filename);
 }
 
 function exportarPDF() {
+  const nombrePaciente = document.getElementById('nombre').value || 'Paciente';
+  const filename = `NutriWeb_Reporte_${nombrePaciente.replace(/\s+/g, '_')}.pdf`;
+
   const element = document.querySelector('.container');
   const opt = {
     margin: [0.3, 0.3], // Top/Bottom, Left/Right margins in inches
-    filename: 'NutriWeb_Reporte.pdf',
+    filename: filename,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2, useCORS: true, logging: false },
     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
