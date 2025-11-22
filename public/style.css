@@ -304,7 +304,7 @@ hr {
 
 /* Yellow background for manual inputs */
 .yellow-bg {
-  background-color: #fffef0 !important;
+  background-color: #ffff00 !important;
   color: black;
   font-weight: 700;
 }
@@ -323,4 +323,209 @@ hr {
 .macro-table td:first-child {
   text-align: right;
   padding-right: 15px;
+}
+
+/* ==========================================================================
+   7. Developed Formula Table
+   ========================================================================== */
+.dev-formula-container {
+  overflow-x: auto;
+  max-width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.dev-formula-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1200px;
+  /* Force horizontal scroll on small screens */
+  font-size: 0.85em;
+}
+
+.dev-formula-table th,
+.dev-formula-table td {
+  padding: 4px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.dev-formula-table th {
+  background-color: #f2f2f2;
+  font-weight: 700;
+  color: #333;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Input styling for the table */
+.fd-input-text {
+  width: 100%;
+  min-width: 100px;
+  padding: 4px;
+  border: none;
+  background: transparent;
+}
+
+.fd-input-num {
+  width: 100%;
+  min-width: 50px;
+  padding: 4px;
+  border: none;
+  text-align: center;
+  background: transparent;
+}
+
+.fd-input-text:focus,
+.fd-input-num:focus {
+  background-color: #e8f0fe;
+  outline: none;
+}
+
+/* Remove borders from inputs to make them look like part of the cell */
+.dev-formula-table input {
+  border-radius: 0;
+}
+
+/* Alternating row colors */
+.dev-formula-table tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+/* ==========================================================================
+   8. Export Buttons
+   ========================================================================== */
+.btn-export {
+  display: inline-block;
+  width: auto;
+  padding: 12px 25px;
+  margin: 0 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-export:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-export.excel {
+  background-color: #217346;
+  /* Excel Green */
+}
+
+.btn-export.pdf {
+  background-color: #d32f2f;
+  /* PDF Red */
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background: white;
+    padding: 0;
+  }
+
+  .container {
+    box-shadow: none;
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  button,
+  .btn-export,
+  #btnAddRow {
+    display: none !important;
+  }
+
+  .dev-formula-table {
+    min-width: 100%;
+    /* Reset min-width for print */
+    font-size: 0.7em;
+    /* Smaller font for print */
+  }
+
+  .dev-formula-container {
+    overflow: visible;
+  }
+}
+
+/* ==========================================================================
+   9. Mobile / Tablet Responsiveness
+   ========================================================================== */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+    margin: 10px;
+    width: auto;
+  }
+
+  h1 {
+    font-size: 1.8em;
+  }
+
+  h2 {
+    font-size: 1.5em;
+  }
+
+  /* Make inputs larger for touch and prevent zoom */
+  input,
+  select,
+  textarea,
+  .fd-input-num,
+  .fd-input-text {
+    font-size: 16px !important;
+    padding: 10px;
+  }
+
+  /* Stack flex containers that are row-based */
+  .input-group {
+    margin-bottom: 15px;
+  }
+
+  /* Ensure tables scroll horizontally */
+  .macro-table-container,
+  .dev-formula-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Smooth scrolling on iOS */
+    margin-bottom: 15px;
+  }
+
+  /* Buttons full width */
+  button,
+  .btn-export {
+    width: 100%;
+    margin: 5px 0;
+    display: block;
+  }
+
+  #exportSection {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-export {
+    margin: 0;
+    /* Reset margin since we use gap */
+  }
+
+  /* Adjust result cards */
+  .result-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .result-value {
+    align-self: flex-end;
+    font-weight: 700;
+  }
 }

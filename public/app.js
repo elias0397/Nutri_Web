@@ -381,4 +381,330 @@ function calcularDistribucion() {
     // Según la imagen, parece ser un campo específico. Lo dejaremos vacío si no aplica.
     document.getElementById('distProtAjustado').textContent = '-';
   }
+
+  // Actualizar también la Fórmula Desarrollada si está visible
+  actualizarDatosFormulaDesarrollada();
+
+  // Mostrar botones de exportación
+  document.getElementById('exportSection').style.display = 'block';
+}
+
+// ... (Existing code for Developed Formula) ...
+
+// ==========================================================================
+// LÓGICA DE EXPORTACIÓN (EXCEL / PDF)
+// ==========================================================================
+
+document.getElementById('btnExportExcel').addEventListener('click', exportarExcel);
+document.getElementById('btnExportPDF').addEventListener('click', exportarPDF);
+
+function exportarExcel() {
+  // 1. Recopilar Datos Generales
+  const datosGenerales = [
+    ['DATOS DEL PACIENTE'],
+    ['Nombre', document.getElementById('nombre').value],
+    ['Fecha', document.getElementById('fecha').value],
+    ['Edad', document.getElementById('edad').value],
+    ['Peso', document.getElementById('peso').value],
+    ['Talla', document.getElementById('talla').value],
+    ['Sexo', document.getElementById('sexo').value],
+    ['Cintura', document.getElementById('cintura').value],
+    ['Muñeca', document.getElementById('muneca').value],
+    [''],
+    ['RESULTADOS PRINCIPALES'],
+    ['IMC', document.getElementById('imcAutoRes').textContent, document.getElementById('imcAutoChip').textContent],
+    ['Peso Ideal', document.getElementById('pesoIdealRes').textContent],
+    ['PPI', document.getElementById('ppiRes').textContent, document.getElementById('ppiChip').textContent],
+    ['TMB (Harris Benedict)', document.getElementById('harrisBenedictRes').textContent],
+    ['VCT', document.getElementById('vctRes').textContent],
+    [''],
+    ['DIAGNÓSTICOS'],
+    ['Dx Médico', document.getElementById('dxMedico').value],
+    ['Dx Nutricional', document.getElementById('dxNutricional').value]
+  ];
+
+  // 2. Recopilar Datos de Distribución
+  const distData = [
+    ['DISTRIBUCIÓN DE MACRONUTRIENTES'],
+    ['VCT Utilizado', document.getElementById('distVct').value],
+    [''],
+    ['Macronutriente', 'KCAL', '%', 'GRAMOS', 'Notas'],
+    ['HC', document.getElementById('distHcKcal').textContent, document.getElementById('distHcPorc').value, document.getElementById('distHcGramos').textContent],
+    ['PR', document.getElementById('distPrKcal').textContent, document.getElementById('distPrPorc').value, document.getElementById('distPrGramos').textContent, '70% PAVB: ' + document.getElementById('distPavb').textContent],
+    ['GR', document.getElementById('distGrKcal').textContent, document.getElementById('distGrPorc').value, document.getElementById('distGrGramos').textContent],
+    ['TOTAL', '', document.getElementById('distSumaPorc').textContent, '']
+  ];
+
+  // 3. Recopilar Datos de Fórmula Desarrollada
+  const fdRows = [['FÓRMULA DESARROLLADA']];
+  // Headers
+  const headers = [
+    'Alimento', 'Medida Casera', 'Cantidad', 'HC', 'Prot', 'Grasa', 'PAVB',
+    'Na', 'K', 'P', 'Ca', 'Col', 'Pur', 'Agua', 'GS', 'CHS', 'Fibra'
+  ];
+  fdRows.push(headers);
+
+  // Data Rows
+  const tableRows = document.querySelectorAll('#fdTableBody tr');
+  tableRows.forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const rowData = [];
+    inputs.forEach(input => rowData.push(input.value));
+    fdRows.push(rowData);
+  });
+
+  // Totals Row
+  const totals = ['TOTALES', '', '',
+    document.getElementById('sumHc').textContent,
+    document.getElementById('sumProt').textContent,
+    document.getElementById('sumGrasa').textContent,
+    document.getElementById('sumPavb').textContent,
+    document.getElementById('sumNa').textContent,
+    document.getElementById('sumK').textContent,
+    document.getElementById('sumP').textContent,
+    document.getElementById('sumCa').textContent,
+    document.getElementById('sumCol').textContent,
+    document.getElementById('sumPur').textContent,
+    document.getElementById('sumAgua').textContent,
+    document.getElementById('sumGs').textContent,
+    document.getElementById('sumChs').textContent,
+    document.getElementById('sumFibra').textContent
+  ];
+  fdRows.push(totals);
+
+  // Add Summary Section (Aporte real de la dieta)
+  fdRows.push(['']); // Empty row
+  fdRows.push(['APORTE REAL DE LA DIETA']);
+  fdRows.push(['VCT Real (Kcal)', document.getElementById('fdVctReal').textContent]);
+  fdRows.push(['PAVB %', document.getElementById('fdPavbPorc').textContent]);
+  fdRows.push(['GRASA SATURADAS %', document.getElementById('fdGsPorc').textContent]);
+  fdRows.push(['CHS %', document.getElementById('fdChsPorc').textContent]);
+
+  // Crear Workbook y Sheets
+  const wb = XLSX.utils.book_new();
+
+  const ws1 = XLSX.utils.aoa_to_sheet(datosGenerales);
+  XLSX.utils.book_append_sheet(wb, ws1, "Datos Generales");
+
+  const ws2 = XLSX.utils.aoa_to_sheet(distData);
+  XLSX.utils.book_append_sheet(wb, ws2, "Distribución");
+
+  const ws3 = XLSX.utils.aoa_to_sheet(fdRows);
+  XLSX.utils.book_append_sheet(wb, ws3, "Fórmula Desarrollada");
+
+  // Descargar
+  XLSX.writeFile(wb, "NutriWeb_Reporte.xlsx");
+}
+
+function exportarPDF() {
+  const element = document.querySelector('.container');
+  const opt = {
+    margin: [0.3, 0.3], // Top/Bottom, Left/Right margins in inches
+    filename: 'NutriWeb_Reporte.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, logging: false },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+
+  // Ocultar botones antes de generar
+  const btnRow = document.getElementById('exportSection');
+  const btnAdd = document.getElementById('btnAddRow');
+
+  // Add a class to body for specific PDF styles if needed
+  document.body.classList.add('generating-pdf');
+
+  btnRow.style.display = 'none';
+  if (btnAdd) btnAdd.style.display = 'none';
+
+  html2pdf().set(opt).from(element).save().then(() => {
+    // Restaurar botones y estado
+    document.body.classList.remove('generating-pdf');
+    btnRow.style.display = 'block';
+    if (btnAdd) btnAdd.style.display = 'inline-block';
+  });
+}
+
+// ==========================================================================
+// LÓGICA PARA FÓRMULA DESARROLLADA
+// ==========================================================================
+
+// Inicialización de listeners para la tabla de fórmula desarrollada
+document.addEventListener('DOMContentLoaded', () => {
+  // Agregar listeners a todos los inputs numéricos de la tabla
+  const inputs = document.querySelectorAll('.fd-input-num');
+  inputs.forEach(input => {
+    input.addEventListener('input', calcularFormulaDesarrollada);
+  });
+});
+
+function actualizarDatosFormulaDesarrollada() {
+  const nombre = document.getElementById('nombre').value;
+  // Usar el VCT del input manual de la distribución
+  const vctTarget = document.getElementById('distVct').value;
+  const pavbRef = document.getElementById('distPavb').textContent;
+
+  document.getElementById('fdNombre').textContent = nombre;
+  document.getElementById('fdVctTarget').textContent = vctTarget;
+  document.getElementById('fdPavbRef').textContent = pavbRef;
+
+  // Actualizar Metas (Targets) en la tabla
+  // Recuperar gramos calculados en la distribución
+  const grHc = document.getElementById('distHcGramos').textContent;
+  const grPr = document.getElementById('distPrGramos').textContent;
+  const grGr = document.getElementById('distGrGramos').textContent;
+
+  document.getElementById('targetHc').textContent = grHc;
+  document.getElementById('targetProt').textContent = grPr;
+  document.getElementById('targetGrasa').textContent = grGr;
+
+  // Calcular metas para GS (<7% VCT) y CHS (<20% VCT)
+  // VCT viene del input manual
+  const vct = parseFloat(vctTarget) || 0;
+
+  // GS: 7% de VCT / 9 kcal/g
+  const targetGs = (vct * 0.07) / 9;
+  document.getElementById('targetGs').textContent = targetGs.toFixed(1);
+
+  // CHS: 20% de VCT / 4 kcal/g
+  const targetChs = (vct * 0.20) / 4;
+  document.getElementById('targetChs').textContent = targetChs.toFixed(2);
+
+  // Mostrar la sección
+  document.getElementById('formulaDesarrollada').style.display = 'block';
+
+  // Recalcular por si hubo cambios en referencias
+  calcularFormulaDesarrollada();
+}
+
+// Listener para el botón de agregar fila
+document.getElementById('btnAddRow').addEventListener('click', agregarFilaFormula);
+
+function agregarFilaFormula() {
+  const tbody = document.getElementById('fdTableBody');
+  const newRow = document.createElement('tr');
+
+  // Estructura de la fila (17 columnas)
+  // 2 inputs de texto, 15 inputs numéricos
+  let html = '';
+
+  // Col 1: Alimento (Texto)
+  html += '<td><input type="text" class="fd-input-text" /></td>';
+  // Col 2: Medida Casera (Texto)
+  html += '<td><input type="text" class="fd-input-text" /></td>';
+  // Col 3: Cantidad (Num)
+  html += '<td><input type="number" class="fd-input-num" /></td>';
+
+  // Cols 4-17: Nutrientes (Num) - Asignar clases específicas si es necesario para selectores CSS,
+  // pero la lógica de cálculo usa índices, así que las clases son opcionales salvo .fd-input-num
+  const clases = [
+    'fd-hc', 'fd-prot', 'fd-grasa', 'fd-pavb', 'fd-na', 'fd-k', 'fd-p',
+    'fd-ca', 'fd-col', 'fd-pur', 'fd-agua', 'fd-gs', 'fd-chs', 'fd-fibra'
+  ];
+
+  clases.forEach(cls => {
+    html += `<td><input type="number" class="fd-input-num ${cls}" /></td>`;
+  });
+
+  newRow.innerHTML = html;
+  tbody.appendChild(newRow);
+
+  // Agregar listeners a los nuevos inputs
+  const newInputs = newRow.querySelectorAll('.fd-input-num');
+  newInputs.forEach(input => {
+    input.addEventListener('input', calcularFormulaDesarrollada);
+  });
+}
+
+function calcularFormulaDesarrollada() {
+  // Column indices (0-based) in the inputs array of a row
+  // Row structure: Text, Text, Num, HC, Prot, Grasa, PAVB, Na, K, P, Ca, Col, Pur, Agua, GS, CHS, Fibra
+  // Indices of inputs: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+
+  const rows = document.querySelectorAll('#fdTableBody tr');
+  const sums = {
+    hc: 0, prot: 0, grasa: 0, pavb: 0, na: 0, k: 0, p: 0, ca: 0, col: 0, pur: 0, agua: 0, gs: 0, chs: 0, fibra: 0
+  };
+
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    if (inputs.length < 17) return; // Safety check
+
+    // Helper to get value
+    const val = (idx) => parseFloat(inputs[idx].value) || 0;
+
+    sums.hc += val(3);
+    sums.prot += val(4);
+    sums.grasa += val(5);
+    sums.pavb += val(6);
+    sums.na += val(7);
+    sums.k += val(8);
+    sums.p += val(9);
+    sums.ca += val(10);
+    sums.col += val(11);
+    sums.pur += val(12);
+    sums.agua += val(13);
+    sums.gs += val(14);
+    sums.chs += val(15);
+    sums.fibra += val(16);
+  });
+
+  // Update Totals Row
+  document.getElementById('sumHc').textContent = sums.hc.toFixed(1);
+  document.getElementById('sumProt').textContent = sums.prot.toFixed(1);
+  document.getElementById('sumGrasa').textContent = sums.grasa.toFixed(1);
+  document.getElementById('sumPavb').textContent = sums.pavb.toFixed(1);
+  document.getElementById('sumNa').textContent = sums.na.toFixed(1);
+  document.getElementById('sumK').textContent = sums.k.toFixed(1);
+  document.getElementById('sumP').textContent = sums.p.toFixed(1);
+  document.getElementById('sumCa').textContent = sums.ca.toFixed(1);
+  document.getElementById('sumCol').textContent = sums.col.toFixed(1);
+  document.getElementById('sumPur').textContent = sums.pur.toFixed(1);
+  document.getElementById('sumAgua').textContent = sums.agua.toFixed(1);
+  document.getElementById('sumGs').textContent = sums.gs.toFixed(1);
+  document.getElementById('sumChs').textContent = sums.chs.toFixed(1);
+  document.getElementById('sumFibra').textContent = sums.fibra.toFixed(1);
+
+  // Calculate KCAL Row
+  const kcalHc = sums.hc * 4;
+  const kcalProt = sums.prot * 4;
+  const kcalGrasa = sums.grasa * 9;
+
+  document.getElementById('kcalHc').textContent = kcalHc.toFixed(1);
+  document.getElementById('kcalProt').textContent = kcalProt.toFixed(1);
+  document.getElementById('kcalGrasa').textContent = kcalGrasa.toFixed(1);
+
+  // Update Summary Section ("Aporte real de la dieta")
+  const vctReal = kcalHc + kcalProt + kcalGrasa;
+  document.getElementById('fdVctReal').textContent = vctReal.toFixed(1);
+
+  // PAVB % (Real / Ref * 100)
+  const pavbRef = parseFloat(document.getElementById('fdPavbRef').textContent.replace(',', '.')) || 0;
+  let pavbPorc = 0;
+  if (pavbRef > 0) {
+    pavbPorc = (sums.pavb / pavbRef) * 100;
+    document.getElementById('fdPavbPorc').textContent = pavbPorc.toFixed(1);
+  } else {
+    document.getElementById('fdPavbPorc').textContent = '-';
+  }
+
+  // Grasa Saturadas % (GS Kcal / VCT Real * 100)
+  // GS Kcal = GS Grams * 9
+  let gsPorc = 0;
+  if (vctReal > 0) {
+    gsPorc = ((sums.gs * 9) / vctReal) * 100;
+    document.getElementById('fdGsPorc').textContent = gsPorc.toFixed(1);
+  } else {
+    document.getElementById('fdGsPorc').textContent = '0.0';
+  }
+
+  // CHS % (CHS Kcal / VCT Real * 100)
+  // CHS Kcal = CHS Grams * 4
+  let chsPorc = 0;
+  if (vctReal > 0) {
+    chsPorc = ((sums.chs * 4) / vctReal) * 100;
+    document.getElementById('fdChsPorc').textContent = chsPorc.toFixed(1);
+  } else {
+    document.getElementById('fdChsPorc').textContent = '0.0';
+  }
 }
