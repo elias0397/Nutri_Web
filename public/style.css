@@ -15,7 +15,7 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   /* Fondo degradado moderno */
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   padding: 20px;
 }
@@ -25,7 +25,8 @@ body {
    ========================================================================== */
 .container {
   background: white;
-  border-radius: 20px; /* Bordes grandes y redondeados */
+  border-radius: 20px;
+  /* Bordes grandes y redondeados */
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   padding: 40px;
   max-width: 1000px;
@@ -34,8 +35,15 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 h1 {
@@ -46,7 +54,8 @@ h1 {
 }
 
 .section-header {
-  background: #6c757d; /* Gris oscuro para las secciones */
+  background: #6c757d;
+  /* Gris oscuro para las secciones */
   color: white;
   padding: 12px 20px;
   margin: 30px 0 20px 0;
@@ -81,20 +90,26 @@ label {
   font-size: 0.95em;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   width: 100%;
   padding: 12px 15px;
   border-radius: 10px;
   border: 2px solid #e0e0e0;
   font-size: 16px;
   transition: all 0.3s ease;
-  background: #fffef0; /* Fondo ligeramente crema */
+  background: #fffef0;
+  /* Fondo ligeramente crema */
   font-family: inherit;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
   outline: none;
-  border-color: #667eea; /* Color del degradado como foco */
+  border-color: #667eea;
+  /* Color del degradado como foco */
   background: white;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
@@ -112,13 +127,15 @@ textarea {
 
 .note {
   font-size: 0.85em;
-  color: #d9534f; /* Rojo de alerta */
+  color: #d9534f;
+  /* Rojo de alerta */
   margin-top: 5px;
   font-style: italic;
 }
 
 .note.info {
-  color: #5bc0de; /* Azul de información */
+  color: #5bc0de;
+  /* Azul de información */
 }
 
 button {
@@ -128,7 +145,7 @@ button {
   border: none;
   border-radius: 10px;
   /* Botón con degradado */
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   font-size: 18px;
   font-weight: 600;
@@ -169,17 +186,40 @@ button:active {
 .chip {
   display: inline-block;
   padding: 6px 10px;
-  border-radius: 999px; /* Chip redondeado */
+  border-radius: 999px;
+  /* Chip redondeado */
   font-weight: 700;
   color: white;
-  margin-left: 8px; /* Pequeño margen para separarlo de la etiqueta */
+  margin-left: 8px;
+  /* Pequeño margen para separarlo de la etiqueta */
   font-size: 0.95em;
 }
-.chip.normal { background: #2e7d32; }        /* verde */
-.chip.sobrepeso { background: #ff9800; }     /* naranja */
-.chip.obesidad { background: #d32f2f; }      /* rojo */
-.chip.desnutricion { background: #6a1b9a; }  /* morado */
-.chip.riesgo { background: #c62828; }        /* rojo oscuro */
+
+.chip.normal {
+  background: #2e7d32;
+}
+
+/* verde */
+.chip.sobrepeso {
+  background: #ff9800;
+}
+
+/* naranja */
+.chip.obesidad {
+  background: #d32f2f;
+}
+
+/* rojo */
+.chip.desnutricion {
+  background: #6a1b9a;
+}
+
+/* morado */
+.chip.riesgo {
+  background: #c62828;
+}
+
+/* rojo oscuro */
 
 .result-card {
   margin-top: 40px;
@@ -198,16 +238,89 @@ button:active {
   padding: 5px 0;
   border-bottom: 1px solid #e0e0e0;
 }
-.result-row:last-child { border-bottom: none; }
 
-.result-label { color: #333; font-weight: 600; }
-.result-value { color: #111; font-weight: 700; }
+.result-row:last-child {
+  border-bottom: none;
+}
 
-.small-note { font-size: 0.9em; color: #666; margin-top: 6px; }
+.result-label {
+  color: #333;
+  font-weight: 600;
+}
+
+.result-value {
+  color: #111;
+  font-weight: 700;
+}
+
+.small-note {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 6px;
+}
 
 /* Separador visual para la sección IMC */
 hr {
   border: none;
   border-top: 1px solid #ddd;
   margin: 20px 0;
+}
+
+/* ==========================================================================
+   6. Macro Distribution Table
+   ========================================================================== */
+.macro-table-container {
+  overflow-x: auto;
+}
+
+.macro-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.95em;
+}
+
+.macro-table th,
+.macro-table td {
+  padding: 8px;
+  text-align: center;
+  border: none;
+}
+
+.macro-table th {
+  font-weight: 700;
+  color: #333;
+}
+
+/* Input cells styling */
+.input-cell input {
+  width: 100%;
+  text-align: center;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Yellow background for manual inputs */
+.yellow-bg {
+  background-color: #fffef0 !important;
+  color: black;
+  font-weight: 700;
+}
+
+.yellow-bg:focus {
+  background-color: #ffffcc !important;
+}
+
+/* Result cells styling */
+.result-cell {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Specific column widths if needed */
+.macro-table td:first-child {
+  text-align: right;
+  padding-right: 15px;
 }

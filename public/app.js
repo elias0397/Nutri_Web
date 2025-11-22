@@ -271,8 +271,114 @@ function realizarCalculos(e) {
   const resultadosDiv = document.getElementById('resultados');
   resultadosDiv.style.display = 'block';
 
+  // ==========================================================================
+  // 8) INICIALIZAR TABLA DE DISTRIBUCIÓN DE MACROS
+  // ==========================================================================
+  const distDiv = document.getElementById('distribucionMacros');
+  distDiv.style.display = 'block';
+
+  // Pre-llenar VCT con el valor calculado
+  const inputVct = document.getElementById('distVct');
+  inputVct.value = Math.round(vct);
+
+  // Pre-llenar porcentajes por defecto (ej: 50, 20, 30) si están vacíos
+  const inputHc = document.getElementById('distHcPorc');
+  const inputPr = document.getElementById('distPrPorc');
+  const inputGr = document.getElementById('distGrPorc');
+
+  if (!inputHc.value) inputHc.value = 50;
+  if (!inputPr.value) inputPr.value = 20;
+  if (!inputGr.value) inputGr.value = 30;
+
+  // Guardar datos globales necesarios para la distribución
+  // Se usan atributos data- en el contenedor para persistir valores entre eventos
+  distDiv.dataset.pesoActual = datos.peso;
+  distDiv.dataset.pesoAjustado = (imc >= 25 || ppi >= 110) ? pesoUtilizar : ''; // Si se usó PA, guardarlo.
+
+  // Calcular distribución inicial
+  calcularDistribucion();
+
   // Usar requestAnimationFrame para asegurar que el scroll funcione correctamente en móviles
   window.requestAnimationFrame(() => {
     resultadosDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
+}
+
+// ==========================================================================
+// LÓGICA PARA DISTRIBUCIÓN DE MACRONUTRIENTES
+// ==========================================================================
+
+// Listeners para recálculo automático al cambiar inputs
+['distVct', 'distHcPorc', 'distPrPorc', 'distGrPorc'].forEach(id => {
+  document.getElementById(id).addEventListener('input', calcularDistribucion);
+});
+
+function calcularDistribucion() {
+  const vct = parseFloat(document.getElementById('distVct').value) || 0;
+  const porcHc = parseFloat(document.getElementById('distHcPorc').value) || 0;
+  const porcPr = parseFloat(document.getElementById('distPrPorc').value) || 0;
+  const porcGr = parseFloat(document.getElementById('distGrPorc').value) || 0;
+
+  // 1. Calcular Suma de Porcentajes
+  const sumaPorc = porcHc + porcPr + porcGr;
+  const spanSuma = document.getElementById('distSumaPorc');
+  spanSuma.textContent = sumaPorc + '%';
+
+  // Validar si suma 100% (visual feedback)
+  if (Math.abs(sumaPorc - 100) < 0.1) {
+    spanSuma.style.color = 'green';
+  } else {
+    spanSuma.style.color = 'red';
+  }
+
+  // 2. Calcular Kcal y Gramos
+  // HC: 4 kcal/g
+  const kcalHc = vct * (porcHc / 100);
+  const grHc = kcalHc / 4;
+
+  // PR: 4 kcal/g
+  const kcalPr = vct * (porcPr / 100);
+  const grPr = kcalPr / 4;
+
+  // GR: 9 kcal/g
+  const kcalGr = vct * (porcGr / 100);
+  const grGr = kcalGr / 9;
+
+  // 3. Actualizar DOM (Kcal y Gramos)
+  document.getElementById('distHcKcal').textContent = Math.round(kcalHc);
+  document.getElementById('distHcGramos').textContent = Math.round(grHc);
+
+  document.getElementById('distPrKcal').textContent = Math.round(kcalPr);
+  document.getElementById('distPrGramos').textContent = Math.round(grPr);
+
+  document.getElementById('distGrKcal').textContent = Math.round(kcalGr);
+  document.getElementById('distGrGramos').textContent = Math.round(grGr);
+
+  // 4. Cálculos Adicionales de Proteína
+  // 70% PAVB (Proteína de Alto Valor Biológico)
+  const pavb = grPr * 0.70;
+  document.getElementById('distPavb').textContent = pavb.toFixed(1);
+
+  // Recuperar pesos guardados
+  const distDiv = document.getElementById('distribucionMacros');
+  const pesoActual = parseFloat(distDiv.dataset.pesoActual);
+  const pesoAjustado = parseFloat(distDiv.dataset.pesoAjustado);
+
+  // Gr Prot / Kg Peso (Actual)
+  if (pesoActual > 0) {
+    const protKg = grPr / pesoActual;
+    document.getElementById('distProtKg').textContent = protKg.toFixed(1);
+  } else {
+    document.getElementById('distProtKg').textContent = '-';
+  }
+
+  // Gr Prot / P. Ajustado
+  if (!isNaN(pesoAjustado) && pesoAjustado > 0) {
+    const protAjustado = grPr / pesoAjustado;
+    document.getElementById('distProtAjustado').textContent = protAjustado.toFixed(1);
+  } else {
+    // Si no hay peso ajustado (paciente normal), se puede mostrar guion o el mismo valor
+    // Según la imagen, parece ser un campo específico. Lo dejaremos vacío si no aplica.
+    document.getElementById('distProtAjustado').textContent = '-';
+  }
 }
