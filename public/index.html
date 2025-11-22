@@ -1,23 +1,31 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NutriWeb - Sistema de Cálculo Nutricional</title>
-  
+
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <div class="container">
+    <!-- ==========================================================================
+         HEADER
+         ========================================================================== -->
     <h1>🍎 NutriWeb - Sistema de Cálculo Nutricional</h1>
 
+    <!-- ==========================================================================
+         FORMULARIO DE DATOS
+         ========================================================================== -->
     <form id="formCalculos">
       <div class="section-header">Datos del paciente para cálculos:</div>
-      
+
       <div class="form-grid">
         <div class="input-group full-width">
           <label for="nombre">Nombre y Apellido:</label>
-          <input type="text" id="nombre"/>
+          <input type="text" id="nombre" />
         </div>
 
         <div class="input-group">
@@ -32,7 +40,7 @@
 
         <div class="input-group">
           <label for="peso">Peso actual: <span class="unit">KG</span></label>
-          <input type="text" id="peso" required placeholder="Ej: 72,5" /> 
+          <input type="text" id="peso" required placeholder="Ej: 72,5" />
         </div>
 
         <div class="input-group">
@@ -60,7 +68,7 @@
           <label for="muneca">CIA de Muñeca: <span class="unit">CM</span></label>
           <input type="text" id="muneca" required placeholder="Ej: 16,2" />
         </div>
-        
+
         <div class="input-group full-width">
           <div class="table-help-container">
             <h4 style="margin-bottom: 5px; color: #555;">Tabla de Referencia Factor Actividad (FA)</h4>
@@ -153,7 +161,7 @@
             </table>
           </div>
         </div>
-         <div class="input-group">
+        <div class="input-group">
           <label for="factorActividad">Factor de Actividad (FA):</label>
           <input type="text" id="factorActividad" required placeholder="" />
         </div>
@@ -161,7 +169,7 @@
           <label for="factorInjuria">Factor de Injuria (FI):</label>
           <input type="text" id="factorInjuria" required placeholder="" />
         </div>
-        </div>
+      </div>
 
       <div class="section-header">Peso Ideal (Según tabla de peso ideal - Solo para Sobrepeso en adelante)</div>
       <div class="form-grid">
@@ -194,24 +202,27 @@
       <div class="section-header">Dx. Nutricional:</div>
       <div class="input-group">
         <label for="dxNutricional">Diagnóstico Nutricional:</label>
-        <textarea id="dxNutricional" placeholder="Siempre el peor rango..."></textarea>q
+        <textarea id="dxNutricional" placeholder="Siempre el peor rango..."></textarea>
       </div>
 
       <button type="submit">Realizar cálculos</button>
     </form>
 
+    <!-- ==========================================================================
+         SECCIÓN DE RESULTADOS
+         ========================================================================== -->
     <div id="resultados" class="result-card" style="display:none;">
       <h2 style="text-align:center; margin-bottom:20px; color:#333;">📊 Resultados del Análisis</h2>
 
       <div class="section-header" style="margin-top:0;">
         Requerimientos Calóricos (Kcal)
       </div>
-      
+
       <div class="result-row" style="background-color: #f0f0f0; font-weight: 700;">
         <div class="result-label">Base para el Cálculo Energético (TMB):</div>
         <div class="result-value"><span id="pesoBaseUsado"></span></div>
       </div>
-      
+
       <div class="result-row">
         <div class="result-label">Peso Ajustado (PA):</div>
         <div class="result-value"><span id="pesoAjustadoRes"></span> KG</div>
@@ -280,4 +291,5 @@
 
   <script src="app.js"></script>
 </body>
+
 </html>
