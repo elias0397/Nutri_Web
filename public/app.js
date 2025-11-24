@@ -959,14 +959,18 @@ function calcularFormulaDesarrollada() {
   const kcalHc = sums.hc * 4;
   const kcalProt = sums.prot * 4;
   const kcalGrasa = sums.grasa * 9;
+  const kcalGs = sums.gs * 9;
+  const kcalChs = sums.chs * 4;
 
   document.getElementById('kcalHc').textContent = formatNumber(kcalHc, 1);
   document.getElementById('kcalProt').textContent = formatNumber(kcalProt, 1);
   document.getElementById('kcalGrasa').textContent = formatNumber(kcalGrasa, 1);
+  document.getElementById('kcalGs').textContent = formatNumber(kcalGs, 1);
+  document.getElementById('kcalChs').textContent = formatNumber(kcalChs, 1);
 
   // 4. Actualizar Resumen (Aporte real de la dieta)
   const vctReal = kcalHc + kcalProt + kcalGrasa;
-  document.getElementById('fdVctReal').textContent = formatNumber(vctReal, 0);
+  document.getElementById('fdVctReal').textContent = formatNumber(vctReal, 2);
 
   // PAVB %: (100 * PAVB Real) / Total Proteínas
   // El usuario pidió: "(100*PAVB real)/tptal de proteinas"
@@ -974,16 +978,16 @@ function calcularFormulaDesarrollada() {
   if (sums.prot > 0) {
     pavbPorc = (100 * sums.pavb) / sums.prot;
   }
-  document.getElementById('fdPavbPorc').textContent = formatNumber(pavbPorc, 0);
+  document.getElementById('fdPavbPorc').textContent = formatNumber(pavbPorc, 2);
 
   // Grasa Saturadas % (GS Kcal / VCT Real * 100)
   // GS Kcal = GS Grams * 9
   let gsPorc = 0;
   if (vctReal > 0) {
     gsPorc = ((sums.gs * 9) / vctReal) * 100;
-    document.getElementById('fdGsPorc').textContent = formatNumber(gsPorc, 1);
+    document.getElementById('fdGsPorc').textContent = formatNumber(gsPorc, 2);
   } else {
-    document.getElementById('fdGsPorc').textContent = '0,0';
+    document.getElementById('fdGsPorc').textContent = '0,00';
   }
 
   // CHS % (CHS Kcal / VCT Real * 100)
@@ -991,8 +995,8 @@ function calcularFormulaDesarrollada() {
   let chsPorc = 0;
   if (vctReal > 0) {
     chsPorc = ((sums.chs * 4) / vctReal) * 100;
-    document.getElementById('fdChsPorc').textContent = formatNumber(chsPorc, 1);
+    document.getElementById('fdChsPorc').textContent = formatNumber(chsPorc, 2);
   } else {
-    document.getElementById('fdChsPorc').textContent = '0,0';
+    document.getElementById('fdChsPorc').textContent = '0,00';
   }
 }
