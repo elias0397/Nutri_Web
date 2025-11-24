@@ -905,7 +905,7 @@ function agregarFilaFormula() {
 
 function calcularFormulaDesarrollada() {
   // Column indices (0-based) in the inputs array of a row
-  // Row structure: Text, Text, Num, HC, Prot, Grasa, PAVB, Na, K, P, Ca, Col, Pur, Agua, GS, CHS, Fibra
+  // Row structure: Text, Text, Num, HC, Prot, PAVB, Grasa, Na, K, P, Ca, Col, Pur, Agua, GS, CHS, Fibra
   // Indices of inputs: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
 
   const rows = document.querySelectorAll('#fdTableBody tr');
@@ -917,13 +917,16 @@ function calcularFormulaDesarrollada() {
     const inputs = row.querySelectorAll('input');
     if (inputs.length < 17) return; // Safety check
 
-    // Helper to get value
-    const val = (idx) => parseFloat(inputs[idx].value) || 0;
+    // Helper to get value (handling comma as decimal separator)
+    const val = (idx) => {
+      const v = inputs[idx].value.replace(',', '.');
+      return parseFloat(v) || 0;
+    };
 
     sums.hc += val(3);
     sums.prot += val(4);
-    sums.grasa += val(5);
-    sums.pavb += val(6);
+    sums.pavb += val(5); // Moved PAVB here
+    sums.grasa += val(6); // Moved Grasa here
     sums.na += val(7);
     sums.k += val(8);
     sums.p += val(9);
