@@ -300,8 +300,8 @@
          SECCIÓN DE DISTRIBUCIÓN DE MACRONUTRIENTES
          ========================================================================== -->
     <div id="distribucionMacros" class="result-card" style="display:none; margin-top: 20px;">
-      <div class="section-header" style="margin-top:0; background-color: #9e9e9e; color: black; font-weight: 800;">
-        DISTRIBUCION DE LOS MACRONUTRIENTES:
+      <div class="section-header">
+        DISTRIBUCION DE LOS MACRONUTRIENTES
       </div>
 
       <div class="macro-table-container">
@@ -309,8 +309,8 @@
           <thead>
             <tr>
               <th></th>
-              <th style="background-color: #bfbfbf;">KCAL</th>
-              <th style="background-color: #bfbfbf;">%</th>
+              <th class="macro-header">KCAL</th>
+              <th class="macro-header">%</th>
               <th></th>
               <th></th>
               <th></th>
@@ -322,7 +322,7 @@
               <td class="input-cell"><input type="number" id="distVct" class="input-manual yellow-bg" /></td>
               <td class="input-cell"><input type="number" id="distPorcTotal" class="input-manual" value="100" disabled
                   style="font-weight: 800;" /></td>
-              <td style="background-color: #bfbfbf; font-weight: 800;">GRAMOS</td>
+              <td class="macro-label">GRAMOS</td>
               <td></td>
               <td></td>
             </tr>
@@ -332,8 +332,8 @@
               <td class="input-cell"><input type="number" id="distHcPorc" class="input-manual yellow-bg"
                   placeholder="%" /></td>
               <td class="result-cell"><span id="distHcGramos"></span></td>
-              <td style="background-color: #bfbfbf; font-weight: 800;">70% PAVB (Gr)</td>
-              <td style="background-color: #bfbfbf; font-weight: 800;">Gr Prot/ Kg Peso</td>
+              <td class="macro-label">70% PAVB (Gr)</td>
+              <td class="macro-label">Gr Prot/ Kg Peso</td>
             </tr>
             <tr>
               <td style="font-weight: 800;">PR</td>
@@ -351,7 +351,7 @@
                   placeholder="%" /></td>
               <td class="result-cell"><span id="distGrGramos"></span></td>
               <td></td>
-              <td style="background-color: #bfbfbf; font-weight: 800;">gr P / P. Ajustado</td>
+              <td class="macro-label">gr P / P. Ajustado</td>
             </tr>
             <tr>
               <td></td>
@@ -378,16 +378,18 @@
          ========================================================================== -->
     <div id="formulaDesarrollada" class="result-card"
       style="display:none; margin-top: 20px; max-width: 100%; overflow: hidden;">
-      <div class="section-header" style="margin-top:0; background-color: #9e9e9e; color: black; font-weight: 800;">
+      <div class="section-header">
         FÓRMULA DESARROLLADA
       </div>
 
       <!-- Top Info Bar -->
-      <div
-        style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; background: #f0f0f0; padding: 10px; border-radius: 5px;">
-        <div style="font-weight: 700;">Nombre: <span id="fdNombre" style="font-weight: 400;"></span></div>
-        <div style="font-weight: 700;">VCT: <span id="fdVctTarget"></span></div>
-        <div style="font-weight: 700;">PAVB DE REFERENCIA: <span id="fdPavbRef"></span></div>
+      <div class="info-bar">
+        <div style="font-size: 1.2em; font-weight: 800; color: #333; margin-bottom: 5px;"><span id="fdNombre"></span>
+        </div>
+        <div style="font-weight: 600; color: #555;">VCT: <span id="fdVctTarget"
+            style="color: #000; font-weight: 800;"></span></div>
+        <div style="font-weight: 600; color: #555;">PAVB DE REFERENCIA: <span id="fdPavbRef"
+            style="color: #000; font-weight: 800;"></span></div>
       </div>
 
       <div class="dev-formula-container">
