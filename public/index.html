@@ -69,7 +69,34 @@
           <input type="text" id="muneca" required placeholder="Ej: 16,2" />
         </div>
 
+        <div class="input-group">
+          <label for="ctxInputResult">Contextura:</label>
+          <input type="text" id="ctxInputResult" readonly placeholder="-"
+            style="background-color: #e8f5e9; font-weight: bold; color: #2e7d32;" />
+        </div>
+
         <div class="input-group full-width">
+          <div class="section-header">Peso Ideal (Según tabla de peso ideal - Solo para Sobrepeso en adelante)</div>
+          <div class="form-grid">
+            <div class="input-group">
+              <label for="x_val">Valor 1 (tabla peso ideal):</label>
+              <input type="text" id="x_val" placeholder="Ej: 71,2" />
+            </div>
+            <div class="input-group">
+              <label for="y_val">Valor 2 (tabla peso ideal):</label>
+              <input type="text" id="y_val" placeholder="Ej: 80" />
+            </div>
+            <div class="input-group">
+              <label for="z_val">Divisor (tabla peso ideal):</label>
+              <input type="text" id="z_val" placeholder="Ej: 2" />
+            </div>
+
+            <div class="input-group full-width">
+              <label for="pesoIdealManual">Peso Ideal Manual:</label>
+              <input type="text" id="pesoIdealManual" placeholder="" />
+              <div class="small-note"></div>
+            </div>
+          </div>
           <div class="table-help-container">
             <h4 style="margin-bottom: 5px; color: #555;">Tabla de Referencia Factor Actividad (FA)</h4>
             <table class="help-table">
@@ -171,27 +198,7 @@
         </div>
       </div>
 
-      <div class="section-header">Peso Ideal (Según tabla de peso ideal - Solo para Sobrepeso en adelante)</div>
-      <div class="form-grid">
-        <div class="input-group">
-          <label for="x_val">Valor 1 (tabla peso ideal):</label>
-          <input type="text" id="x_val" placeholder="Ej: 71,2" />
-        </div>
-        <div class="input-group">
-          <label for="y_val">Valor 2 (tabla peso ideal):</label>
-          <input type="text" id="y_val" placeholder="Ej: 80" />
-        </div>
-        <div class="input-group">
-          <label for="z_val">Divisor (tabla peso ideal):</label>
-          <input type="text" id="z_val" placeholder="Ej: 2" />
-        </div>
 
-        <div class="input-group full-width">
-          <label for="pesoIdealManual">Peso Ideal Manual:</label>
-          <input type="text" id="pesoIdealManual" placeholder="" />
-          <div class="small-note"></div>
-        </div>
-      </div>
 
       <div class="section-header">Dx. Médico:</div>
       <div class="input-group">
@@ -214,32 +221,7 @@
     <div id="resultados" class="result-card" style="display:none;">
       <h2 style="text-align:center; margin-bottom:20px; color:#333;">📊 Resultados del Análisis</h2>
 
-      <div class="section-header" style="margin-top:0;">
-        Requerimientos Calóricos (Kcal)
-      </div>
 
-      <div class="result-row" style="background-color: #f0f0f0; font-weight: 700;">
-        <div class="result-label">Base para el Cálculo Energético (TMB):</div>
-        <div class="result-value"><span id="pesoBaseUsado"></span></div>
-      </div>
-
-      <div class="result-row">
-        <div class="result-label">Peso Ajustado (PA):</div>
-        <div class="result-value"><span id="pesoAjustadoRes"></span> KG</div>
-      </div>
-      <div class="result-row">
-        <div class="result-label">Fórmula Práctica (Kcal/Kg):</div>
-        <div class="result-value"><span id="formulaPracticaRes"></span> Kcal.</div>
-      </div>
-      <div class="result-row">
-        <div class="result-label">Harris Benedict (TMB):</div>
-        <div class="result-value"><span id="harrisBenedictRes"></span> Kcal.</div>
-      </div>
-      <div class="result-row">
-        <div class="result-label" style="font-weight: 800;">Valor Calórico Total (VCT):</div>
-        <div class="result-value" style="font-weight: 800;"><span id="vctRes"></span> Kcal.</div>
-      </div>
-      <hr>
       <div class="section-header">
         Cálculo Automático de IMC
       </div>
@@ -284,6 +266,33 @@
 
       <div id="riesgoCintura" class="small-note" style="display:none; color:#c62828; font-weight:700; margin-top:12px;">
         Riesgo cardiovascular por relación cintura/talla elevada (> 0.5)
+      </div>
+
+      <hr>
+      <div class="section-header">
+        Requerimientos Calóricos (Kcal)
+      </div>
+
+      <div class="result-row" style="background-color: #f0f0f0; font-weight: 700;">
+        <div class="result-label">Base para el Cálculo Energético (TMB):</div>
+        <div class="result-value"><span id="pesoBaseUsado"></span></div>
+      </div>
+
+      <div class="result-row">
+        <div class="result-label">Peso Ajustado (PA):</div>
+        <div class="result-value"><span id="pesoAjustadoRes"></span> KG</div>
+      </div>
+      <div class="result-row">
+        <div class="result-label">Fórmula Práctica (Kcal/Kg):</div>
+        <div class="result-value"><span id="formulaPracticaRes"></span> Kcal.</div>
+      </div>
+      <div class="result-row">
+        <div class="result-label">Harris Benedict (TMB):</div>
+        <div class="result-value"><span id="harrisBenedictRes"></span> Kcal.</div>
+      </div>
+      <div class="result-row">
+        <div class="result-label" style="font-weight: 800;">Valor Calórico Total (VCT):</div>
+        <div class="result-value" style="font-weight: 800;"><span id="vctRes"></span> Kcal.</div>
       </div>
 
     </div>
@@ -356,7 +365,7 @@
             <tr>
               <td></td>
               <td></td>
-              <td style="font-size: 0.7em; font-style: italic;">← SUMA TOTAL DEL %</td>
+              <td style="font-size: 0.7em; font-style: italic;">SUMA TOTAL DEL %</td>
               <td></td>
               <td></td>
               <td></td>
@@ -391,7 +400,7 @@
               <th id="targetHc"></th>
               <th id="targetProt"></th>
               <th id="targetGrasa"></th>
-              <th style="background-color: #e0e0e0;"></th> <!-- PAVB -->
+              <th id="targetPavb"></th> <!-- PAVB -->
               <th style="background-color: #e0e0e0;"></th> <!-- Na -->
               <th style="background-color: #e0e0e0;"></th> <!-- K -->
               <th style="background-color: #e0e0e0;"></th> <!-- P -->

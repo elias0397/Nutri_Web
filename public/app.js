@@ -28,6 +28,23 @@ const getData = (id) => {
   return value === '' || isNaN(parseFloat(cleanValue)) ? NaN : parseFloat(cleanValue);
 };
 
+
+
+/**
+ * Helper para formatear números con separador de miles '.' y decimal ','
+ * Ejemplo: 1234.56 -> "1.234,56"
+ * @param {number} value - El valor a formatear.
+ * @param {number} decimals - Cantidad de decimales (default 2).
+ * @returns {string} El valor formateado.
+ */
+const formatNumber = (value, decimals = 2) => {
+  if (value === undefined || value === null || isNaN(value)) return '-';
+  // Asegurar que es número
+  const num = parseFloat(value);
+  // Formatear: toFixed para decimales, replace punto por coma, regex para miles
+  return num.toFixed(decimals).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
 /**
  * Función principal: toma todos los valores, valida, calcula y muestra resultados.
  * @param {Event} e - El evento de submit del formulario.
@@ -86,13 +103,13 @@ function realizarCalculos(e) {
   // Fórmula específica del proyecto para estimación de estructura.
   if (!isNaN(datos.x_val) && !isNaN(datos.y_val) && !isNaN(datos.z_val) && datos.z_val !== 0) {
     pesoIdeal = (datos.x_val + datos.y_val) / datos.z_val;
-    document.getElementById('pesoIdealManual').value = pesoIdeal.toFixed(1).replace('.', ',');
+    document.getElementById('pesoIdealManual').value = formatNumber(pesoIdeal, 1);
   }
 
   // B) Uso del Peso Ideal Manual si fue ingresado (sobrescribe el calculado)
   if (!isNaN(datos.pesoIdealManual) && datos.pesoIdealManual > 0) {
     pesoIdeal = datos.pesoIdealManual;
-    document.getElementById('pesoIdealManual').value = pesoIdeal.toFixed(1).replace('.', ',');
+    document.getElementById('pesoIdealManual').value = formatNumber(pesoIdeal, 1);
   }
 
   if (isNaN(pesoIdeal) || pesoIdeal <= 0) {
@@ -153,6 +170,36 @@ function realizarCalculos(e) {
     pesoUtilizar = datos.peso;
     pesoBaseTexto = 'Peso Actual';
   }
+
+  // 2. Cálculo de Contextura (Talla / Muñeca)
+  let contextura = '';
+  let contexturaClass = 'normal';
+  let rValue = 0;
+
+  if (datos.talla > 0 && datos.muneca > 0) {
+    rValue = datos.talla / datos.muneca;
+
+    // Interpretación según género
+    if (datos.sexo === 'masculino') { // Changed 'hombre' to 'masculino' to match existing 'datos.sexo' values
+      if (rValue > 10.4) { contextura = 'Pequeña'; contexturaClass = 'bajo'; }
+      else if (rValue >= 9.6) { contextura = 'Mediana'; contexturaClass = 'normal'; }
+      else { contextura = 'Grande'; contexturaClass = 'alto'; }
+    } else { // femenino
+      if (rValue > 11.0) { contextura = 'Pequeña'; contexturaClass = 'bajo'; }
+      else if (rValue >= 10.1) { contextura = 'Mediana'; contexturaClass = 'normal'; }
+      else { contextura = 'Grande'; contexturaClass = 'alto'; }
+    }
+  }
+
+  document.getElementById('ctxValor').textContent = rValue > 0 ? rValue.toFixed(2).replace('.', ',') : '-'; // Updated ID to ctxValor
+  const contexturaChip = document.getElementById('ctxTipo'); // Updated ID to ctxTipo
+  contexturaChip.textContent = contextura;
+  contexturaChip.className = `chip ${contexturaClass}`;
+  // contexturaChip.style.display = contextura ? 'inline-block' : 'none'; // This line is not needed as ctxTipo is already handled in results section
+
+  // 3. Peso Ideal (Hamwi) - This comment seems to be a leftover from the provided snippet, not a new calculation.
+  // Hombres: 48kg por los primeros 152.4cm + 2.7kg por cada 2.54cm adicionales
+  // Mujeres: 45.5kg por los primeros 152.4cm + 2.27kg por cada 2.54cm adicionales
 
   // 5.1) Cálculo de Fórmula Práctica (Kcal/kg)
   // Estima requerimientos basándose en el estado nutricional (PPI)
@@ -233,24 +280,25 @@ function realizarCalculos(e) {
   // Actualiza el DOM con los valores calculados.
   // ==========================================================================
 
-  // Resultados Energía
+  // Mostrar resultados
   document.getElementById('pesoBaseUsado').textContent = pesoBaseTexto; // Muestra si se usó PA o P
-  document.getElementById('pesoAjustadoRes').textContent = pesoUtilizar.toFixed(1).replace('.', ',');
-  document.getElementById('formulaPracticaRes').textContent = formulaPractica.toFixed(1).replace('.', ',');
-  document.getElementById('harrisBenedictRes').textContent = tmb.toFixed(1).replace('.', ',');
-  document.getElementById('vctRes').textContent = vct.toFixed(1).replace('.', ',');
+  document.getElementById('pesoAjustadoRes').textContent = formatNumber(pesoUtilizar, 1);
+  document.getElementById('formulaPracticaRes').textContent = formatNumber(formulaPractica, 0);
+  document.getElementById('harrisBenedictRes').textContent = formatNumber(tmb, 0);
+  document.getElementById('vctRes').textContent = formatNumber(vct, 0);
 
-  // Resultados IMC
-  document.getElementById('imcAutoRes').textContent = imc.toFixed(2).replace('.', ',');
+  // Mostrar IMC
+  document.getElementById('imcAutoRes').textContent = formatNumber(imc, 1);
   const imcChip = document.getElementById('imcAutoChip');
   imcChip.className = imcClass;
   imcChip.textContent = imcCat;
 
   // Resultados Contextura/Peso Ideal
-  document.getElementById('ctxValor').textContent = valorCtx.toFixed(2).replace('.', ',');
+  document.getElementById('ctxValor').textContent = formatNumber(valorCtx, 2);
   document.getElementById('ctxTipo').textContent = tipoCtx;
-  document.getElementById('pesoIdealRes').textContent = pesoIdeal.toFixed(1).replace('.', ',');
-  document.getElementById('ppiRes').textContent = ppi.toFixed(1).replace('.', ',') + '%';
+  // Mostrar resultados de Peso Ideal y PPI
+  document.getElementById('pesoIdealRes').textContent = formatNumber(pesoIdeal, 1);
+  document.getElementById('ppiRes').textContent = formatNumber(ppi, 1) + '%';
 
   // Resultados PPI
   const ppiChip = document.getElementById('ppiChip');
@@ -258,7 +306,7 @@ function realizarCalculos(e) {
   ppiChip.textContent = interpretacion;
 
   // Resultados Cintura/Talla
-  document.getElementById('cinturaTalla').textContent = cinturaTallaRatio.toFixed(2).replace('.', ',');
+  document.getElementById('cinturaTalla').textContent = formatNumber(cinturaTallaRatio, 2);
 
   const aviso = document.getElementById('riesgoCintura');
   if (riesgoCintura) {
@@ -345,19 +393,21 @@ function calcularDistribucion() {
   const grGr = kcalGr / 9;
 
   // 3. Actualizar DOM (Kcal y Gramos)
-  document.getElementById('distHcKcal').textContent = Math.round(kcalHc);
-  document.getElementById('distHcGramos').textContent = Math.round(grHc);
+  document.getElementById('distHcKcal').textContent = formatNumber(kcalHc, 0);
+  document.getElementById('distHcGramos').textContent = formatNumber(grHc, 0);
 
-  document.getElementById('distPrKcal').textContent = Math.round(kcalPr);
-  document.getElementById('distPrGramos').textContent = Math.round(grPr);
+  document.getElementById('distPrKcal').textContent = formatNumber(kcalPr, 0);
+  document.getElementById('distPrGramos').textContent = formatNumber(grPr, 0);
 
-  document.getElementById('distGrKcal').textContent = Math.round(kcalGr);
-  document.getElementById('distGrGramos').textContent = Math.round(grGr);
+  document.getElementById('distGrKcal').textContent = formatNumber(kcalGr, 0);
+  document.getElementById('distGrGramos').textContent = formatNumber(grGr, 0);
 
   // 4. Cálculos Adicionales de Proteína
   // 70% PAVB (Proteína de Alto Valor Biológico)
-  const pavb = grPr * 0.70;
-  document.getElementById('distPavb').textContent = pavb.toFixed(1);
+  // 70% PAVB (Proteína de Alto Valor Biológico)
+  // Fórmula: (Total de proteinas * 70) / 100
+  const pavb = (grPr * 70) / 100;
+  document.getElementById('distPavb').textContent = formatNumber(pavb, 1);
 
   // Recuperar pesos guardados
   const distDiv = document.getElementById('distribucionMacros');
@@ -367,7 +417,7 @@ function calcularDistribucion() {
   // Gr Prot / Kg Peso (Actual)
   if (pesoActual > 0) {
     const protKg = grPr / pesoActual;
-    document.getElementById('distProtKg').textContent = protKg.toFixed(1);
+    document.getElementById('distProtKg').textContent = formatNumber(protKg, 1);
   } else {
     document.getElementById('distProtKg').textContent = '-';
   }
@@ -375,7 +425,7 @@ function calcularDistribucion() {
   // Gr Prot / P. Ajustado
   if (!isNaN(pesoAjustado) && pesoAjustado > 0) {
     const protAjustado = grPr / pesoAjustado;
-    document.getElementById('distProtAjustado').textContent = protAjustado.toFixed(1);
+    document.getElementById('distProtAjustado').textContent = formatNumber(protAjustado, 1);
   } else {
     // Si no hay peso ajustado (paciente normal), se puede mostrar guion o el mismo valor
     // Según la imagen, parece ser un campo específico. Lo dejaremos vacío si no aplica.
@@ -390,6 +440,75 @@ function calcularDistribucion() {
 }
 
 // ... (Existing code for Developed Formula) ...
+
+// ==========================================================================
+// CÁLCULO EN TIEMPO REAL DE CONTEXTURA
+// ==========================================================================
+const inputTalla = document.getElementById('talla');
+const inputMuneca = document.getElementById('muneca');
+const inputSexo = document.getElementById('sexo');
+
+if (inputTalla && inputMuneca && inputSexo) {
+  const inputsContextura = [inputTalla, inputMuneca, inputSexo];
+  inputsContextura.forEach(input => {
+    input.addEventListener('input', calcularContexturaIndependiente);
+    input.addEventListener('change', calcularContexturaIndependiente);
+  });
+}
+
+function calcularContexturaIndependiente() {
+  const talla = parseFloat(document.getElementById('talla').value.replace(',', '.')) || 0;
+  const muneca = parseFloat(document.getElementById('muneca').value.replace(',', '.')) || 0;
+  const sexo = document.getElementById('sexo').value;
+
+  let contextura = '';
+  let contexturaClass = 'normal';
+  let rValue = 0;
+
+  if (talla > 0 && muneca > 0 && sexo) {
+    rValue = talla / muneca;
+
+    if (sexo === 'masculino') {
+      if (rValue > 10.4) { contextura = 'Pequeña'; contexturaClass = 'bajo'; }
+      else if (rValue >= 9.6) { contextura = 'Mediana'; contexturaClass = 'normal'; }
+      else { contextura = 'Grande'; contexturaClass = 'alto'; }
+    } else { // femenino
+      if (rValue > 11.0) { contextura = 'Pequeña'; contexturaClass = 'bajo'; }
+      else if (rValue >= 10.1) { contextura = 'Mediana'; contexturaClass = 'normal'; }
+      else { contextura = 'Grande'; contexturaClass = 'alto'; }
+    }
+  }
+
+  const elValor = document.getElementById('ctxValor');
+  const elTipo = document.getElementById('ctxTipo');
+
+  // Update main results if they exist
+  if (elValor) elValor.textContent = rValue > 0 ? formatNumber(rValue, 2) : '-';
+  if (elTipo) {
+    elTipo.textContent = contextura;
+    elTipo.className = `chip ${contexturaClass}`;
+    // Ensure the result card is visible if it was hidden (though usually results are hidden until calc)
+    // If we want to show JUST this result, we might need to handle the display of the parent container.
+    // However, usually the results container is hidden. 
+    // Let's assume the user wants to see it even before full calc? 
+    // Or maybe just update it if the results are already visible.
+    // Given the request "Mostrar contextura despues de ingresar...", implies immediate feedback.
+    // But if the parent #resultados is hidden, this won't be seen.
+    // We should probably NOT force show #resultados as it has many empty fields.
+  }
+
+  // Update input-adjacent results
+  const elInputResult = document.getElementById('ctxInputResult');
+
+  if (elInputResult) {
+    if (contextura) {
+      // Format: "Mediana (10,00)"
+      elInputResult.value = `${contextura} (${formatNumber(rValue, 2)})`;
+    } else {
+      elInputResult.value = '';
+    }
+  }
+}
 
 // ==========================================================================
 // LÓGICA DE EXPORTACIÓN (EXCEL / PDF)
@@ -718,27 +837,25 @@ function actualizarDatosFormulaDesarrollada() {
   document.getElementById('fdVctTarget').textContent = vctTarget;
   document.getElementById('fdPavbRef').textContent = pavbRef;
 
-  // Actualizar Metas (Targets) en la tabla
-  // Recuperar gramos calculados en la distribución
-  const grHc = document.getElementById('distHcGramos').textContent;
-  const grPr = document.getElementById('distPrGramos').textContent;
-  const grGr = document.getElementById('distGrGramos').textContent;
+  // 2. Calcular Metas (Targets)
+  // HC, Prot, Grasa vienen de la distribución (en gramos)
+  document.getElementById('targetHc').textContent = document.getElementById('distHcGramos').textContent;
+  document.getElementById('targetProt').textContent = document.getElementById('distPrGramos').textContent;
+  document.getElementById('targetGrasa').textContent = document.getElementById('distGrGramos').textContent;
 
-  document.getElementById('targetHc').textContent = grHc;
-  document.getElementById('targetProt').textContent = grPr;
-  document.getElementById('targetGrasa').textContent = grGr;
+  // PAVB Target (Reference)
+  document.getElementById('targetPavb').textContent = document.getElementById('distPavb').textContent;
 
-  // Calcular metas para GS (<7% VCT) y CHS (<20% VCT)
-  // VCT viene del input manual
+  // GS (Grasa Saturada): < 7% del VCT / 9 kcal/g
+  // CHS (Carbohidratos Simples): < 10% del VCT (o 20% según criterio) / 4 kcal/g
+  // El usuario pidió: GS (7% VCT) y CHS (20% VCT)
   const vct = parseFloat(vctTarget) || 0;
 
-  // GS: 7% de VCT / 9 kcal/g
   const targetGs = (vct * 0.07) / 9;
-  document.getElementById('targetGs').textContent = targetGs.toFixed(1);
+  document.getElementById('targetGs').textContent = formatNumber(targetGs, 1);
 
-  // CHS: 20% de VCT / 4 kcal/g
   const targetChs = (vct * 0.20) / 4;
-  document.getElementById('targetChs').textContent = targetChs.toFixed(2);
+  document.getElementById('targetChs').textContent = formatNumber(targetChs, 1);
 
   // Mostrar la sección
   document.getElementById('formulaDesarrollada').style.display = 'block';
@@ -820,52 +937,50 @@ function calcularFormulaDesarrollada() {
   });
 
   // Update Totals Row
-  document.getElementById('sumHc').textContent = sums.hc.toFixed(1);
-  document.getElementById('sumProt').textContent = sums.prot.toFixed(1);
-  document.getElementById('sumGrasa').textContent = sums.grasa.toFixed(1);
-  document.getElementById('sumPavb').textContent = sums.pavb.toFixed(1);
-  document.getElementById('sumNa').textContent = sums.na.toFixed(1);
-  document.getElementById('sumK').textContent = sums.k.toFixed(1);
-  document.getElementById('sumP').textContent = sums.p.toFixed(1);
-  document.getElementById('sumCa').textContent = sums.ca.toFixed(1);
-  document.getElementById('sumCol').textContent = sums.col.toFixed(1);
-  document.getElementById('sumPur').textContent = sums.pur.toFixed(1);
-  document.getElementById('sumAgua').textContent = sums.agua.toFixed(1);
-  document.getElementById('sumGs').textContent = sums.gs.toFixed(1);
-  document.getElementById('sumChs').textContent = sums.chs.toFixed(1);
-  document.getElementById('sumFibra').textContent = sums.fibra.toFixed(1);
+  document.getElementById('sumHc').textContent = formatNumber(sums.hc, 1);
+  document.getElementById('sumProt').textContent = formatNumber(sums.prot, 1);
+  document.getElementById('sumGrasa').textContent = formatNumber(sums.grasa, 1);
+  document.getElementById('sumPavb').textContent = formatNumber(sums.pavb, 1);
+  document.getElementById('sumNa').textContent = formatNumber(sums.na, 1);
+  document.getElementById('sumK').textContent = formatNumber(sums.k, 1);
+  document.getElementById('sumP').textContent = formatNumber(sums.p, 1);
+  document.getElementById('sumCa').textContent = formatNumber(sums.ca, 1);
+  document.getElementById('sumCol').textContent = formatNumber(sums.col, 1);
+  document.getElementById('sumPur').textContent = formatNumber(sums.pur, 1);
+  document.getElementById('sumAgua').textContent = formatNumber(sums.agua, 1);
+  document.getElementById('sumGs').textContent = formatNumber(sums.gs, 1);
+  document.getElementById('sumChs').textContent = formatNumber(sums.chs, 1);
+  document.getElementById('sumFibra').textContent = formatNumber(sums.fibra, 1);
 
   // Calculate KCAL Row
   const kcalHc = sums.hc * 4;
   const kcalProt = sums.prot * 4;
   const kcalGrasa = sums.grasa * 9;
 
-  document.getElementById('kcalHc').textContent = kcalHc.toFixed(1);
-  document.getElementById('kcalProt').textContent = kcalProt.toFixed(1);
-  document.getElementById('kcalGrasa').textContent = kcalGrasa.toFixed(1);
+  document.getElementById('kcalHc').textContent = formatNumber(kcalHc, 1);
+  document.getElementById('kcalProt').textContent = formatNumber(kcalProt, 1);
+  document.getElementById('kcalGrasa').textContent = formatNumber(kcalGrasa, 1);
 
-  // Update Summary Section ("Aporte real de la dieta")
+  // 4. Actualizar Resumen (Aporte real de la dieta)
   const vctReal = kcalHc + kcalProt + kcalGrasa;
-  document.getElementById('fdVctReal').textContent = vctReal.toFixed(1);
+  document.getElementById('fdVctReal').textContent = formatNumber(vctReal, 0);
 
-  // PAVB % (Real / Ref * 100)
-  const pavbRef = parseFloat(document.getElementById('fdPavbRef').textContent.replace(',', '.')) || 0;
+  // PAVB %: (100 * PAVB Real) / Total Proteínas
+  // El usuario pidió: "(100*PAVB real)/tptal de proteinas"
   let pavbPorc = 0;
-  if (pavbRef > 0) {
-    pavbPorc = (sums.pavb / pavbRef) * 100;
-    document.getElementById('fdPavbPorc').textContent = pavbPorc.toFixed(1);
-  } else {
-    document.getElementById('fdPavbPorc').textContent = '-';
+  if (sums.prot > 0) {
+    pavbPorc = (100 * sums.pavb) / sums.prot;
   }
+  document.getElementById('fdPavbPorc').textContent = formatNumber(pavbPorc, 0);
 
   // Grasa Saturadas % (GS Kcal / VCT Real * 100)
   // GS Kcal = GS Grams * 9
   let gsPorc = 0;
   if (vctReal > 0) {
     gsPorc = ((sums.gs * 9) / vctReal) * 100;
-    document.getElementById('fdGsPorc').textContent = gsPorc.toFixed(1);
+    document.getElementById('fdGsPorc').textContent = formatNumber(gsPorc, 1);
   } else {
-    document.getElementById('fdGsPorc').textContent = '0.0';
+    document.getElementById('fdGsPorc').textContent = '0,0';
   }
 
   // CHS % (CHS Kcal / VCT Real * 100)
@@ -873,8 +988,8 @@ function calcularFormulaDesarrollada() {
   let chsPorc = 0;
   if (vctReal > 0) {
     chsPorc = ((sums.chs * 4) / vctReal) * 100;
-    document.getElementById('fdChsPorc').textContent = chsPorc.toFixed(1);
+    document.getElementById('fdChsPorc').textContent = formatNumber(chsPorc, 1);
   } else {
-    document.getElementById('fdChsPorc').textContent = '0.0';
+    document.getElementById('fdChsPorc').textContent = '0,0';
   }
 }
