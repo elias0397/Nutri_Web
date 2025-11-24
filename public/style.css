@@ -467,6 +467,16 @@ hr {
   /* PDF Red */
 }
 
+.btn-suggestion {
+  background: linear-gradient(135deg, #20B2AA 0%, #008080 100%);
+  /* LightSeaGreen to Teal */
+  margin-top: 20px;
+}
+
+.btn-suggestion:hover {
+  box-shadow: 0 6px 20px rgba(32, 178, 170, 0.4);
+}
+
 /* Print Styles */
 @media print {
   body {
