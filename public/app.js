@@ -8,8 +8,44 @@
 
 // Ejecutar al cargar el DOM
 document.addEventListener('DOMContentLoaded', () => {
+  const inputFecha = document.getElementById('fecha');
+  const inputEdad = document.getElementById('edad');
+
   // Inicializar la fecha actual en el input de fecha
-  document.getElementById('fecha').valueAsDate = new Date();
+  inputFecha.valueAsDate = new Date();
+
+  // Calcular edad inicial (al cargar, suele ser 0 por ser hoy)
+  if (inputFecha.value) {
+    inputEdad.value = calcularEdad(inputFecha.value);
+  }
+
+  // Listener para cambio de fecha: calcular edad automáticamente
+  inputFecha.addEventListener('input', () => {
+    const edad = calcularEdad(inputFecha.value);
+    if (!isNaN(edad)) {
+      inputEdad.value = edad;
+    }
+  });
+
+  // Lógica para Peso Ideal Automático (Promedio de Peso 1 y Peso 2)
+  const inputX = document.getElementById('x_val');
+  const inputY = document.getElementById('y_val');
+  const inputPesoIdealManual = document.getElementById('pesoIdealManual');
+
+  const calcularPesoIdealPromedio = () => {
+    const x = parseFloat(inputX.value.replace(',', '.')) || 0;
+    const y = parseFloat(inputY.value.replace(',', '.')) || 0;
+    if (x > 0 && y > 0) {
+      const promedio = (x + y) / 2;
+      // Usamos formatNumber para consistencia con el resto de la app
+      inputPesoIdealManual.value = formatNumber(promedio, 1);
+    }
+  };
+
+  if (inputX && inputY && inputPesoIdealManual) {
+    inputX.addEventListener('input', calcularPesoIdealPromedio);
+    inputY.addEventListener('input', calcularPesoIdealPromedio);
+  }
 
   // Asignar el listener al formulario (llama a realizarCalculos al hacer submit)
   const form = document.getElementById('formCalculos');
@@ -27,6 +63,25 @@ const getData = (id) => {
   const cleanValue = value.replace(',', '.');
   return value === '' || isNaN(parseFloat(cleanValue)) ? NaN : parseFloat(cleanValue);
 };
+
+/**
+ * Calcula la edad a partir de una fecha de nacimiento.
+ * @param {string} fechaStr - La fecha en formato YYYY-MM-DD.
+ * @returns {number} La edad calculada.
+ */
+function calcularEdad(fechaStr) {
+  if (!fechaStr) return NaN;
+  const hoy = new Date();
+  const cumple = new Date(fechaStr);
+  let edad = hoy.getFullYear() - cumple.getFullYear();
+  const m = hoy.getMonth() - cumple.getMonth();
+
+  // Ajustar si aún no ha pasado el cumpleaños este año
+  if (m < 0 || (m === 0 && hoy.getDate() < cumple.getDate())) {
+    edad--;
+  }
+  return edad;
+}
 
 
 
