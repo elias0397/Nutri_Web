@@ -84,6 +84,13 @@
         <div class=" input-group full-width">
           <div class="section-header">Peso Ideal (Según tabla de peso ideal - Solo para Sobrepeso en adelante)</div>
           <div class="form-grid">
+            <div class="input-group full-width" id="sugerenciaTablaRef"
+              style="display:none; background: #e8f5e9; padding: 10px; border-radius: 4px; margin-bottom: 10px; border-left: 4px solid #4caf50;">
+              <strong>Sugerencia de Tabla:</strong> <span id="rangoTextoRef">-</span> KG
+              <div style="margin-top: 5px; font-weight: bold; color: #2e7d32;">
+                Peso Ideal Calculado (Tabla): <span id="pesoIdealTablaAuto">-</span> KG
+              </div>
+            </div>
             <div class="input-group">
               <label for="x_val">Peso 1 (tabla peso ideal):</label>
               <input type="text" id="x_val" placeholder="" />
@@ -251,9 +258,10 @@
         <div class="result-value"><span id="ctxTipo"></span></div>
       </div>
 
+
       <div class="result-row">
-        <div class="result-label">Peso ideal (kg):</div>
-        <div class="result-value"><span id="pesoIdealRes"></span></div>
+        <div class="result-label">Peso Ideal para el Cálculo:</div>
+        <div class="result-value"><span id="pesoIdealRes"></span> KG</div>
       </div>
 
       <div class="result-row">

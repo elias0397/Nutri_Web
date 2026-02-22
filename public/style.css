@@ -164,7 +164,7 @@ button:active {
 }
 
 /* ==========================================================================
-   4. Responsive Design
+   4. Diseño Responsivo
    ========================================================================== */
 @media (max-width: 768px) {
   .form-grid {
@@ -181,7 +181,7 @@ button:active {
 }
 
 /* ==========================================================================
-   5. Results & Chips
+   5. Resultados e Indicadores (Chips)
    ========================================================================== */
 .chip {
   display: inline-block;
@@ -195,23 +195,30 @@ button:active {
   font-size: 0.95em;
 }
 
+
+/* Contextura Chips */
+.bajo {
+  background-color: #00acc1 !important;
+}
+
+.alto {
+  background-color: #1565c0 !important;
+}
+
 .chip.normal {
-  background: #2e7d32;
+  background-color: #2e7d32 !important;
 }
 
-/* verde */
 .chip.sobrepeso {
-  background: #ff9800;
+  background-color: #ff9800 !important;
 }
 
-/* naranja */
 .chip.obesidad {
-  background: #d32f2f;
+  background-color: #d32f2f !important;
 }
 
-/* rojo */
 .chip.desnutricion {
-  background: #6a1b9a;
+  background-color: #6a1b9a !important;
 }
 
 /* morado */
@@ -267,7 +274,7 @@ hr {
 }
 
 /* ==========================================================================
-   6. Macro Distribution Table
+   6. Tabla de Distribución de Macros
    ========================================================================== */
 .macro-table-container {
   overflow-x: auto;
@@ -340,7 +347,7 @@ hr {
 }
 
 /* ==========================================================================
-   7. Developed Formula Table
+   7. Tabla de Fórmula Desarrollada
    ========================================================================== */
 .dev-formula-container {
   overflow-x: auto;
@@ -436,7 +443,7 @@ hr {
 }
 
 /* ==========================================================================
-   8. Export Buttons
+   8. Botones de Exportación
    ========================================================================== */
 .btn-export {
   display: inline-block;
@@ -509,7 +516,7 @@ hr {
 }
 
 /* ==========================================================================
-   9. Mobile / Tablet Responsiveness
+   9. Responsividad para Móviles / Tablets
    ========================================================================== */
 @media (max-width: 768px) {
   .container {
@@ -597,7 +604,7 @@ body.generating-pdf .container {
 }
 
 /* ==========================================================================
-   10. Dedicated PDF Report Styles
+   10. Estilos Dedicados para el Reporte PDF
    ========================================================================== */
 .pdf-report-container {
   font-family: 'Helvetica', 'Arial', sans-serif;

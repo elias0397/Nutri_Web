@@ -6,8 +6,18 @@
  * @version 1.0.0
  */
 
+let datosPesoIdeal = null;
+
 // Ejecutar al cargar el DOM
 document.addEventListener('DOMContentLoaded', () => {
+  // Cargar tablas de peso ideal
+  fetch('tablas_peso_ideal.json')
+    .then(response => response.json())
+    .then(data => {
+      datosPesoIdeal = data;
+    })
+    .catch(err => console.error('Error cargando tablas de peso ideal:', err));
+
   const inputFecha = document.getElementById('fecha');
   const inputEdad = document.getElementById('edad');
 
@@ -33,8 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputPesoIdealManual = document.getElementById('pesoIdealManual');
 
   const calcularPesoIdealPromedio = () => {
-    const x = parseFloat(inputX.value.replace(',', '.')) || 0;
-    const y = parseFloat(inputY.value.replace(',', '.')) || 0;
+    const xValStr = inputX.value.replace(',', '.');
+    const yValStr = inputY.value.replace(',', '.');
+    const x = parseFloat(xValStr) || 0;
+    const y = parseFloat(yValStr) || 0;
     if (x > 0 && y > 0) {
       const promedio = (x + y) / 2;
       // Usamos formatNumber para consistencia con el resto de la app
@@ -81,6 +93,74 @@ function calcularEdad(fechaStr) {
     edad--;
   }
   return edad;
+}
+
+/**
+ * Busca los rangos de peso ideal en la tabla cargada desde JSON.
+ * Se basa en Talla, Sexo y Contextura.
+ */
+function buscarPesoIdealDesdeTabla() {
+  if (!datosPesoIdeal) return;
+
+  const talla = parseInt(document.getElementById('talla').value, 10);
+  const sexo = document.getElementById('sexo').value;
+  const ctxText = document.getElementById('ctxInputResult').value.toLowerCase();
+
+  const containerRef = document.getElementById('sugerenciaTablaRef');
+  if (isNaN(talla) || !sexo || !ctxText) {
+    if (containerRef) containerRef.style.display = 'none';
+    return;
+  }
+
+  // Determinar la complexion
+  let complexion = '';
+  if (ctxText.includes('pequeña') || ctxText.includes('ligera')) complexion = 'ligera';
+  else if (ctxText.includes('mediana')) complexion = 'mediana';
+  else if (ctxText.includes('grande')) complexion = 'grande';
+
+  if (!complexion) {
+    if (containerRef) containerRef.style.display = 'none';
+    return;
+  }
+
+  const tablaSexo = datosPesoIdeal[sexo];
+  if (tablaSexo && tablaSexo[talla]) {
+    const rango = tablaSexo[talla][complexion];
+    if (rango && rango.includes('-')) {
+      const parts = rango.split('-');
+      const inputX = document.getElementById('x_val');
+      const inputY = document.getElementById('y_val');
+      const textRef = document.getElementById('rangoTextoRef');
+
+      if (textRef && containerRef) {
+        textRef.textContent = rango;
+        containerRef.style.display = 'block';
+      }
+
+      const x = parseFloat(parts[0].replace(',', '.')) || 0;
+      const y = parseFloat(parts[1].replace(',', '.')) || 0;
+      const promedio = (x + y) / 2;
+
+      const resEmp = document.getElementById('pesoIdealTablaAuto');
+      if (resEmp) {
+        resEmp.textContent = formatNumber(promedio, 1);
+      }
+
+      if (inputX && inputY) {
+        inputX.value = parts[0].trim();
+        inputY.value = parts[1].trim();
+
+        const inputPesoIdealManual = document.getElementById('pesoIdealManual');
+        if (inputPesoIdealManual) {
+          inputPesoIdealManual.value = formatNumber(promedio, 1);
+        }
+      }
+    } else {
+      if (containerRef) containerRef.style.display = 'none';
+    }
+  } else {
+    if (containerRef) containerRef.style.display = 'none';
+  }
 }
 
 
@@ -239,28 +319,36 @@ function realizarCalculos(e) {
   // 2. Cálculo de Contextura (Talla / Muñeca)
   let contextura = '';
   let contexturaClass = 'normal';
+  let contexturaColor = '#2e7d32'; // Verde por defecto
   let rValue = 0;
 
   if (datos.talla > 0 && datos.muneca > 0) {
     rValue = datos.talla / datos.muneca;
 
     // Interpretación según género
-    if (datos.sexo === 'masculino') { // Changed 'hombre' to 'masculino' to match existing 'datos.sexo' values
-      if (rValue > 10.4) { contextura = 'Pequeña'; contexturaClass = 'bajo'; }
-      else if (rValue >= 9.6) { contextura = 'Mediana'; contexturaClass = 'normal'; }
-      else { contextura = 'Grande'; contexturaClass = 'alto'; }
+    if (datos.sexo === 'masculino') {
+      if (rValue > 10.4) { contextura = 'Pequeña'; contexturaClass = 'bajo'; contexturaColor = '#00acc1'; }
+      else if (rValue >= 9.6) { contextura = 'Mediana'; contexturaClass = 'normal'; contexturaColor = '#2e7d32'; }
+      else { contextura = 'Grande'; contexturaClass = 'alto'; contexturaColor = '#1565c0'; }
     } else { // femenino
-      if (rValue > 11.0) { contextura = 'Pequeña'; contexturaClass = 'bajo'; }
-      else if (rValue >= 10.1) { contextura = 'Mediana'; contexturaClass = 'normal'; }
-      else { contextura = 'Grande'; contexturaClass = 'alto'; }
+      if (rValue > 11.0) { contextura = 'Pequeña'; contexturaClass = 'bajo'; contexturaColor = '#00acc1'; }
+      else if (rValue >= 10.1) { contextura = 'Mediana'; contexturaClass = 'normal'; contexturaColor = '#2e7d32'; }
+      else { contextura = 'Grande'; contexturaClass = 'alto'; contexturaColor = '#1565c0'; }
     }
   }
 
-  document.getElementById('ctxValor').textContent = rValue > 0 ? rValue.toFixed(2).replace('.', ',') : '-'; // Updated ID to ctxValor
-  const contexturaChip = document.getElementById('ctxTipo'); // Updated ID to ctxTipo
+  document.getElementById('ctxValor').textContent = rValue > 0 ? rValue.toFixed(2).replace('.', ',') : '-';
+  const contexturaChip = document.getElementById('ctxTipo');
   contexturaChip.textContent = contextura;
   contexturaChip.className = `chip ${contexturaClass}`;
-  // contexturaChip.style.display = contextura ? 'inline-block' : 'none'; // This line is not needed as ctxTipo is already handled in results section
+  // Aplicar color de fondo directamente para asegurar visibilidad (evita problemas de caché CSS)
+  if (contextura) {
+    contexturaChip.style.backgroundColor = contexturaColor;
+    contexturaChip.style.color = 'white';
+    contexturaChip.style.display = 'inline-block';
+  } else {
+    contexturaChip.style.display = 'none';
+  }
 
   // 3. Peso Ideal (Hamwi) - This comment seems to be a leftover from the provided snippet, not a new calculation.
   // Hombres: 48kg por los primeros 152.4cm + 2.7kg por cada 2.54cm adicionales
@@ -361,7 +449,7 @@ function realizarCalculos(e) {
   // Resultados Contextura/Peso Ideal
   document.getElementById('ctxValor').textContent = formatNumber(valorCtx, 2);
   document.getElementById('ctxTipo').textContent = tipoCtx;
-  // Mostrar resultados de Peso Ideal y PPI
+
   document.getElementById('pesoIdealRes').textContent = formatNumber(pesoIdeal, 1);
   document.getElementById('ppiRes').textContent = formatNumber(ppi, 1) + '%';
 
@@ -528,47 +616,47 @@ function calcularContexturaIndependiente() {
 
   let contextura = '';
   let contexturaClass = 'normal';
+  let contexturaColor = '#2e7d32';
   let rValue = 0;
 
   if (talla > 0 && muneca > 0 && sexo) {
     rValue = talla / muneca;
 
     if (sexo === 'masculino') {
-      if (rValue > 10.4) { contextura = 'Pequeña'; contexturaClass = 'bajo'; }
-      else if (rValue >= 9.6) { contextura = 'Mediana'; contexturaClass = 'normal'; }
-      else { contextura = 'Grande'; contexturaClass = 'alto'; }
+      if (rValue > 10.4) { contextura = 'Pequeña'; contexturaClass = 'bajo'; contexturaColor = '#00acc1'; }
+      else if (rValue >= 9.6) { contextura = 'Mediana'; contexturaClass = 'normal'; contexturaColor = '#2e7d32'; }
+      else { contextura = 'Grande'; contexturaClass = 'alto'; contexturaColor = '#1565c0'; }
     } else { // femenino
-      if (rValue > 11.0) { contextura = 'Pequeña'; contexturaClass = 'bajo'; }
-      else if (rValue >= 10.1) { contextura = 'Mediana'; contexturaClass = 'normal'; }
-      else { contextura = 'Grande'; contexturaClass = 'alto'; }
+      if (rValue > 11.0) { contextura = 'Pequeña'; contexturaClass = 'bajo'; contexturaColor = '#00acc1'; }
+      else if (rValue >= 10.1) { contextura = 'Mediana'; contexturaClass = 'normal'; contexturaColor = '#2e7d32'; }
+      else { contextura = 'Grande'; contexturaClass = 'alto'; contexturaColor = '#1565c0'; }
     }
   }
 
   const elValor = document.getElementById('ctxValor');
   const elTipo = document.getElementById('ctxTipo');
 
-  // Update main results if they exist
+  // Actualizar resultados principales si existen
   if (elValor) elValor.textContent = rValue > 0 ? formatNumber(rValue, 2) : '-';
   if (elTipo) {
     elTipo.textContent = contextura;
     elTipo.className = `chip ${contexturaClass}`;
-    // Ensure the result card is visible if it was hidden (though usually results are hidden until calc)
-    // If we want to show JUST this result, we might need to handle the display of the parent container.
-    // However, usually the results container is hidden. 
-    // Let's assume the user wants to see it even before full calc? 
-    // Or maybe just update it if the results are already visible.
-    // Given the request "Mostrar contextura despues de ingresar...", implies immediate feedback.
-    // But if the parent #resultados is hidden, this won't be seen.
-    // We should probably NOT force show #resultados as it has many empty fields.
+    // Aplicar color directamente para asegurar visibilidad
+    if (contextura) {
+      elTipo.style.backgroundColor = contexturaColor;
+      elTipo.style.color = 'white';
+    }
   }
 
-  // Update input-adjacent results
+  // Actualizar resultados adyacentes a los inputs
   const elInputResult = document.getElementById('ctxInputResult');
 
   if (elInputResult) {
     if (contextura) {
-      // Format: "Mediana (10,00)"
+      // Formato: "Mediana (10,00)"
       elInputResult.value = `${contextura} (${formatNumber(rValue, 2)})`;
+      // Disparar búsqueda de Peso Ideal
+      buscarPesoIdealDesdeTabla();
     } else {
       elInputResult.value = '';
     }
@@ -713,7 +801,7 @@ function exportarPDF() {
     // Limpiar el DOM
     document.body.removeChild(tempContainer);
   }).catch(err => {
-    console.error("PDF Generation Error:", err);
+    console.error("Error en la generación del PDF:", err);
     if (document.body.contains(tempContainer)) {
       document.body.removeChild(tempContainer);
     }
@@ -980,9 +1068,9 @@ function calcularFormulaDesarrollada() {
 
   rows.forEach(row => {
     const inputs = row.querySelectorAll('input');
-    if (inputs.length < 17) return; // Safety check
+    if (inputs.length < 17) return; // Verificación de seguridad
 
-    // Helper to get value (handling comma as decimal separator)
+    // Helper para obtener valor (manejando coma como separador decimal)
     const val = (idx) => {
       const v = inputs[idx].value.replace(',', '.');
       return parseFloat(v) || 0;
@@ -990,8 +1078,8 @@ function calcularFormulaDesarrollada() {
 
     sums.hc += val(3);
     sums.prot += val(4);
-    sums.pavb += val(5); // Moved PAVB here
-    sums.grasa += val(6); // Moved Grasa here
+    sums.pavb += val(5); // Movido PAVB aquí
+    sums.grasa += val(6); // Movido Grasa aquí
     sums.na += val(7);
     sums.k += val(8);
     sums.p += val(9);
