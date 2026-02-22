@@ -8,8 +8,33 @@
 
 // Ejecutar al cargar el DOM
 document.addEventListener('DOMContentLoaded', () => {
-  // Inicializar la fecha actual en el input de fecha
-  document.getElementById('fecha').valueAsDate = new Date();
+  // Inicializar la fecha actual en formato DD/MM/AAAA
+  const formatToday = () => {
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const yyyy = today.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
+  };
+  const inputFecha = document.getElementById('fecha');
+  inputFecha.value = formatToday();
+
+  // Formato automático de fecha DD/MM/AAAA mientras se escribe
+  inputFecha.addEventListener('input', function (e) {
+    let v = e.target.value.replace(/\D/g, ''); // Remover todo lo que no sea dígito
+    if (v.length > 8) v = v.substring(0, 8);
+    let formatted = '';
+    if (v.length > 0) {
+      formatted += v.substring(0, 2);
+    }
+    if (v.length > 2) {
+      formatted += '/' + v.substring(2, 4);
+    }
+    if (v.length > 4) {
+      formatted += '/' + v.substring(4, 8);
+    }
+    e.target.value = formatted;
+  });
 
   // Asignar el listener al formulario (llama a realizarCalculos al hacer submit)
   const form = document.getElementById('formCalculos');
@@ -68,16 +93,36 @@ function realizarCalculos(e) {
     // Valores para cálculo de estructura ósea (si aplica)
     x_val: getData('x_val'),
     y_val: getData('y_val'),
-    z_val: getData('z_val'),
+    z_val: 2, // Se fijó a 2 como constante
     pesoIdealManual: getData('pesoIdealManual'),
     factorActividad: getData('factorActividad'),
     factorInjuria: getData('factorInjuria')
   };
 
   // ==========================================================================
-  // 2) VALIDACIONES BÁSICAS
-  // Verifica que los campos numéricos requeridos tengan valores válidos.
+  // 2) VALIDACIONES BÁSICAS Y DE FECHA
+  // Verifica que los campos tengan valores válidos y la fecha sea correcta.
   // ==========================================================================
+
+  // Validar formato de fecha DD/MM/AAAA
+  const fechaStr = datos.fecha;
+  const fechaRegex = /^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+  if (!fechaRegex.test(fechaStr)) {
+    alert('Por favor ingresa una fecha válida en formato DD/MM/AAAA para Fecha de nacimiento.');
+    return;
+  }
+
+  // Validar si es una fecha real que existe en el calendario
+  const [dia, mes, anio] = fechaStr.split('/');
+  const fechaValida = new Date(parseInt(anio), parseInt(mes) - 1, parseInt(dia));
+  if (fechaValida.getFullYear() !== parseInt(anio) || fechaValida.getMonth() !== parseInt(mes) - 1 || fechaValida.getDate() !== parseInt(dia)) {
+    alert('La fecha ingresada no es válida o no existe en el calendario.');
+    return;
+  }
+
+  // Se almacena el objeto fecha válido internamente por si se desea usar como fecha
+  datos.fechaObjeto = fechaValida;
+
   const numerosRequeridos = ['peso', 'talla', 'cintura', 'muneca', 'factorActividad', 'factorInjuria'];
   for (const key of numerosRequeridos) {
     if (isNaN(datos[key]) || datos[key] <= 0) {
