@@ -7,6 +7,8 @@
  */
 
 let datosPesoIdeal = null;
+/** Si el usuario editó manualmente el campo Peso Ideal Manual, no sobrescribir con el valor de la tabla. */
+let pesoIdealManualUserEdited = false;
 
 // Ejecutar al cargar el DOM
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(response => response.json())
     .then(data => {
       datosPesoIdeal = data;
+      // Sincronizar peso ideal con la tabla si ya hay datos (útil en móviles o carga lenta)
+      calcularContexturaIndependiente();
     })
     .catch(err => console.error('Error cargando tablas de peso ideal:', err));
 
@@ -41,6 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Asignar el listener al formulario (llama a realizarCalculos al hacer submit)
   const form = document.getElementById('formCalculos');
   form.addEventListener('submit', realizarCalculos);
+
+  // Peso Ideal Manual: marcar como editado por el usuario para no sobrescribir con la tabla
+  const inputPesoIdealManual = document.getElementById('pesoIdealManual');
+  if (inputPesoIdealManual) {
+    inputPesoIdealManual.addEventListener('input', () => { pesoIdealManualUserEdited = true; });
+    inputPesoIdealManual.addEventListener('change', () => { pesoIdealManualUserEdited = true; });
+  }
 });
 
 /**
@@ -124,7 +135,7 @@ function buscarPesoIdealDesdeTabla() {
       }
 
       const inputPesoIdealManual = document.getElementById('pesoIdealManual');
-      if (inputPesoIdealManual) {
+      if (inputPesoIdealManual && !pesoIdealManualUserEdited) {
         inputPesoIdealManual.value = formatNumber(promedio, 1);
       }
     } else {
@@ -216,9 +227,21 @@ function realizarCalculos(e) {
   // En móviles los eventos de input pueden no haberse disparado: forzar recálculo
   calcularContexturaIndependiente();
 
-  // Uso del Peso Ideal Manual si fue ingresado
-  // Se vuelve a leer del DOM por si calcularContexturaIndependiente() lo actualizó (móviles)
-  const pesoIdealManualActual = getData('pesoIdealManual');
+  // Si el peso ideal manual sigue vacío pero la tabla tiene valor (común en móviles), usarlo
+  let pesoIdealManualActual = getData('pesoIdealManual');
+  if ((isNaN(pesoIdealManualActual) || pesoIdealManualActual <= 0) && datosPesoIdeal) {
+    const tablaAutoEl = document.getElementById('pesoIdealTablaAuto');
+    const textoTabla = tablaAutoEl && tablaAutoEl.textContent ? tablaAutoEl.textContent.trim() : '';
+    if (textoTabla && textoTabla !== '-') {
+      const numTabla = parseFloat(textoTabla.replace(/\./g, '').replace(',', '.'));
+      if (!isNaN(numTabla) && numTabla > 0) {
+        pesoIdealManualActual = numTabla;
+        document.getElementById('pesoIdealManual').value = formatNumber(numTabla, 1);
+      }
+    }
+  }
+
+  // Uso del Peso Ideal Manual si fue ingresado o calculado por tabla
   if (!isNaN(pesoIdealManualActual) && pesoIdealManualActual > 0) {
     pesoIdeal = pesoIdealManualActual;
     document.getElementById('pesoIdealManual').value = formatNumber(pesoIdeal, 1);
@@ -570,9 +593,14 @@ const inputSexo = document.getElementById('sexo');
 
 if (inputTalla && inputMuneca && inputSexo) {
   const inputsContextura = [inputTalla, inputMuneca, inputSexo];
+  const recalcContexturaYTabla = () => {
+    pesoIdealManualUserEdited = false; // Al cambiar talla/sexo/muñeca, usar de nuevo el valor de la tabla
+    calcularContexturaIndependiente();
+  };
   inputsContextura.forEach(input => {
-    input.addEventListener('input', calcularContexturaIndependiente);
-    input.addEventListener('change', calcularContexturaIndependiente);
+    input.addEventListener('input', recalcContexturaYTabla);
+    input.addEventListener('change', recalcContexturaYTabla);
+    input.addEventListener('blur', recalcContexturaYTabla); // En móviles el blur suele dispararse al salir del campo
   });
 }
 
