@@ -213,9 +213,14 @@ function realizarCalculos(e) {
   // ==========================================================================
   let pesoIdeal = NaN;
 
+  // En móviles los eventos de input pueden no haberse disparado: forzar recálculo
+  calcularContexturaIndependiente();
+
   // Uso del Peso Ideal Manual si fue ingresado
-  if (!isNaN(datos.pesoIdealManual) && datos.pesoIdealManual > 0) {
-    pesoIdeal = datos.pesoIdealManual;
+  // Se vuelve a leer del DOM por si calcularContexturaIndependiente() lo actualizó (móviles)
+  const pesoIdealManualActual = getData('pesoIdealManual');
+  if (!isNaN(pesoIdealManualActual) && pesoIdealManualActual > 0) {
+    pesoIdeal = pesoIdealManualActual;
     document.getElementById('pesoIdealManual').value = formatNumber(pesoIdeal, 1);
   }
 
