@@ -37,27 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Lógica para Peso Ideal Automático (Promedio de Peso 1 y Peso 2)
-  const inputX = document.getElementById('x_val');
-  const inputY = document.getElementById('y_val');
-  const inputPesoIdealManual = document.getElementById('pesoIdealManual');
-
-  const calcularPesoIdealPromedio = () => {
-    const xValStr = inputX.value.replace(',', '.');
-    const yValStr = inputY.value.replace(',', '.');
-    const x = parseFloat(xValStr) || 0;
-    const y = parseFloat(yValStr) || 0;
-    if (x > 0 && y > 0) {
-      const promedio = (x + y) / 2;
-      // Usamos formatNumber para consistencia con el resto de la app
-      inputPesoIdealManual.value = formatNumber(promedio, 1);
-    }
-  };
-
-  if (inputX && inputY && inputPesoIdealManual) {
-    inputX.addEventListener('input', calcularPesoIdealPromedio);
-    inputY.addEventListener('input', calcularPesoIdealPromedio);
-  }
 
   // Asignar el listener al formulario (llama a realizarCalculos al hacer submit)
   const form = document.getElementById('formCalculos');
@@ -128,8 +107,6 @@ function buscarPesoIdealDesdeTabla() {
     const rango = tablaSexo[talla][complexion];
     if (rango && rango.includes('-')) {
       const parts = rango.split('-');
-      const inputX = document.getElementById('x_val');
-      const inputY = document.getElementById('y_val');
       const textRef = document.getElementById('rangoTextoRef');
 
       if (textRef && containerRef) {
@@ -146,14 +123,9 @@ function buscarPesoIdealDesdeTabla() {
         resEmp.textContent = formatNumber(promedio, 1);
       }
 
-      if (inputX && inputY) {
-        inputX.value = parts[0].trim();
-        inputY.value = parts[1].trim();
-
-        const inputPesoIdealManual = document.getElementById('pesoIdealManual');
-        if (inputPesoIdealManual) {
-          inputPesoIdealManual.value = formatNumber(promedio, 1);
-        }
+      const inputPesoIdealManual = document.getElementById('pesoIdealManual');
+      if (inputPesoIdealManual) {
+        inputPesoIdealManual.value = formatNumber(promedio, 1);
       }
     } else {
       if (containerRef) containerRef.style.display = 'none';
@@ -201,9 +173,6 @@ function realizarCalculos(e) {
     cintura: getData('cintura'),
     muneca: getData('muneca'),
     // Valores para cálculo de estructura ósea (si aplica)
-    x_val: getData('x_val'),
-    y_val: getData('y_val'),
-    z_val: 2, // Se fijó a 2 como constante
     pesoIdealManual: getData('pesoIdealManual'),
     factorActividad: getData('factorActividad'),
     factorInjuria: getData('factorInjuria')
@@ -244,21 +213,14 @@ function realizarCalculos(e) {
   // ==========================================================================
   let pesoIdeal = NaN;
 
-  // A) Cálculo automático del Peso Ideal basado en medidas óseas (X, Y, Z)
-  // Fórmula específica del proyecto para estimación de estructura.
-  if (!isNaN(datos.x_val) && !isNaN(datos.y_val) && !isNaN(datos.z_val) && datos.z_val !== 0) {
-    pesoIdeal = (datos.x_val + datos.y_val) / datos.z_val;
-    document.getElementById('pesoIdealManual').value = formatNumber(pesoIdeal, 1);
-  }
-
-  // B) Uso del Peso Ideal Manual si fue ingresado (sobrescribe el calculado)
+  // Uso del Peso Ideal Manual si fue ingresado
   if (!isNaN(datos.pesoIdealManual) && datos.pesoIdealManual > 0) {
     pesoIdeal = datos.pesoIdealManual;
     document.getElementById('pesoIdealManual').value = formatNumber(pesoIdeal, 1);
   }
 
   if (isNaN(pesoIdeal) || pesoIdeal <= 0) {
-    alert('No se pudo calcular el Peso Ideal. Completa X, Y, Z o ingresa manualmente.');
+    alert('No se pudo calcular el Peso Ideal. Por favor, ingresa el Peso Ideal manualmente o asegúrate de que la talla y el sexo estén seleccionados para el cálculo automático.');
     return;
   }
 
