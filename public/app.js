@@ -123,10 +123,17 @@ function realizarCalculos(e) {
   // Se almacena el objeto fecha válido internamente por si se desea usar como fecha
   datos.fechaObjeto = fechaValida;
 
-  const numerosRequeridos = ['peso', 'talla', 'cintura', 'muneca', 'factorActividad', 'factorInjuria'];
-  for (const key of numerosRequeridos) {
-    if (isNaN(datos[key]) || datos[key] <= 0) {
-      alert(`Por favor ingresa un valor numérico válido para ${key}.`);
+  const numerosRequeridos = [
+    { key: 'peso', label: 'Peso actual' },
+    { key: 'talla', label: 'Talla' },
+    { key: 'cintura', label: 'CIA de Cintura' },
+    { key: 'muneca', label: 'CIA de Muñeca' },
+    { key: 'factorActividad', label: 'Factor de Actividad (FA)' },
+    { key: 'factorInjuria', label: 'Factor de Injuria (FI)' }
+  ];
+  for (const item of numerosRequeridos) {
+    if (isNaN(datos[item.key]) || datos[item.key] <= 0) {
+      alert(`Por favor ingresa un valor numérico válido para ${item.label}.`);
       return;
     }
   }
